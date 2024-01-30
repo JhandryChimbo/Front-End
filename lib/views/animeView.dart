@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:noticias/controls/servicio_back/FacadeService.dart';
+import 'package:noticias/widgets/drawer.dart';
 
 class AnimeView extends StatefulWidget {
   const AnimeView({Key? key}) : super(key: key);
@@ -18,6 +19,7 @@ class _AnimeViewState extends State<AnimeView> {
       appBar: AppBar(
         title: const Text('Lista de Animes'),
       ),
+      drawer: AppDrawer(),
       body: _buildAnimeList(),
     );
   }
@@ -94,8 +96,8 @@ class _AnimeViewState extends State<AnimeView> {
 
     return Image.network(
       imageUrl,
-      height: 100, // Ajusta la altura según tus necesidades
-      width: 100, // Ajusta el ancho según tus necesidades
+      height: 100,
+      width: 100, 
       fit: BoxFit.cover,
     );
   }

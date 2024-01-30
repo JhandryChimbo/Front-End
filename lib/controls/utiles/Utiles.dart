@@ -2,6 +2,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class Utiles {
   final _storage = const FlutterSecureStorage();
+  
   void saveValue(key, value) async {
     await _storage.write(key: key, value: value);
   }
@@ -14,7 +15,7 @@ class Utiles {
     await _storage.delete(key: key);
   }
 
-  void removeAllItem(key) async {
+  void removeAllItem() async {
     await _storage.deleteAll();
   }
 }

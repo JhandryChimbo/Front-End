@@ -13,8 +13,8 @@ class Conexion {
   final String URL_MEDIA = "http://192.168.0.105:3000/api/images/";
 
   //DE LA UNIVERSIDAD
-  // final String URL = "http://10.20.138.3:3000/api/";
-  // final String URL_MEDIA = "http://10.20.138.3:3000/api/images/";
+  // final String URL = "http://10.20.139.18:3000/api/";
+  // final String URL_MEDIA = "http://10.20.139.18:3000/api/images/";
   static bool NO_TOKEN = false;
   //auto-token
   Future<RespuestaGenerica> solicitudGet(String recurso, bool token) async {
