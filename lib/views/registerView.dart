@@ -1,7 +1,7 @@
 import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:noticias/controls/servicio_back/FacadeService.dart';
-import 'package:noticias/controls/utiles/Utiles.dart';
+// import 'package:noticias/controls/utiles/Utiles.dart';
 import 'package:validators/validators.dart';
 
 class RegisterView extends StatefulWidget {
@@ -19,46 +19,47 @@ class _RegisterViewState extends State<RegisterView> {
     final TextEditingController apellidosC = TextEditingController();
     final TextEditingController correoC = TextEditingController();
     final TextEditingController claveC = TextEditingController();
-    final TextEditingController direccionC = TextEditingController();
-    final TextEditingController fechaC = TextEditingController();
-    final TextEditingController celularC = TextEditingController();
 
     void _iniciar() {
-    setState(() {
-      FacadeService servicio = FacadeService();
-      if (_formKey.currentState!.validate()) {
-        Map<String, String> mapa = {
-          "correo": correoC.text,
-          "clave": claveC.text,
-          "nombres": nombresC.text,
-          "apellidos": apellidosC.text,
-          "direccion": direccionC.text,
-          "celular": celularC.text,
-          "fecha": fechaC.text,
-        };
-        log(mapa.toString());
+      setState(() {
+        FacadeService servicio = FacadeService();
+        if (_formKey.currentState!.validate()) {
+          Map<String, String> mapa = {
+            "correo": correoC.text,
+            "clave": claveC.text,
+            "nombres": nombresC.text,
+            "apellidos": apellidosC.text,
+          };
+          log(mapa.toString());
 
-        servicio.crearCuentaUsuario(mapa).then((value) async {
-          if (value.code == 200) {
-            log(value.datos['token']);
-            log(value.datos['user']);
-            Utiles util = Utiles();
-            util.saveValue('token', value.datos['token']);
-            util.saveValue('user', value.datos['user']);
-            util.saveValue('external_id', value.datos['external_id']);
-            final SnackBar msg =
-                SnackBar(content: Text("Cuenta Creada ${value.datos['user']}"));
-            ScaffoldMessenger.of(context).showSnackBar(msg);
-          } else {
-            final SnackBar msg = SnackBar(content: Text("Error ${value.tag}"));
-            ScaffoldMessenger.of(context).showSnackBar(msg);
-          }
-        });
-      } else {
-        log("Errores");
-      }
-    });
-  }
+          servicio.crearCuentaUsuario(mapa).then((value) async {
+            try {
+              if (value.code == 200) {
+                const SnackBar msg =
+                    SnackBar(content: Text("Cuenta Creada correctamente"));
+                ScaffoldMessenger.of(context).showSnackBar(msg);
+
+                // Realizar la navegación después de la creación exitosa
+                Navigator.pushReplacementNamed(context, '/home');
+              } else {
+                final SnackBar msg =
+                    SnackBar(content: Text("Error ${value.tag}"));
+                ScaffoldMessenger.of(context).showSnackBar(msg);
+              }
+            } catch (error) {
+              print("Error durante la creación de la cuenta: $error");
+              // Manejar el error según sea necesario
+            }
+          }).catchError((error) {
+            print(
+                "Error durante la creación de la cuenta (catchError): $error");
+            // Manejar el error según sea necesario
+          });
+        } else {
+          log("Errores");
+        }
+      });
+    }
 
     return Form(
       key: _formKey,
@@ -119,54 +120,6 @@ class _RegisterViewState extends State<RegisterView> {
             Container(
               padding: const EdgeInsets.all(10),
               child: TextFormField(
-                controller: direccionC,
-                validator: (value) {
-                  if (value!.isEmpty) {
-                    return "Debe ingresar la direccion";
-                  }
-                  return null;
-                },
-                decoration: const InputDecoration(
-                  labelText: "Direccion",
-                  suffixIcon: Icon(Icons.supervised_user_circle),
-                ),
-              ),
-            ),
-            Container(
-              padding: const EdgeInsets.all(10),
-              child: TextFormField(
-                controller: celularC,
-                validator: (value) {
-                  if (value!.isEmpty) {
-                    return "Debe ingresar el celular";
-                  }
-                  return null;
-                },
-                decoration: const InputDecoration(
-                  labelText: "Celular",
-                  suffixIcon: Icon(Icons.supervised_user_circle),
-                ),
-              ),
-            ),
-            Container(
-              padding: const EdgeInsets.all(10),
-              child: TextFormField(
-                controller: fechaC,
-                validator: (value) {
-                  if (value!.isEmpty) {
-                    return "Debe ingresar la fecha de nacimiento";
-                  }
-                  return null;
-                },
-                decoration: const InputDecoration(
-                  labelText: "Fecha de nacimiento",
-                  suffixIcon: Icon(Icons.supervised_user_circle),
-                ),
-              ),
-            ),
-            Container(
-              padding: const EdgeInsets.all(10),
-              child: TextFormField(
                 controller: correoC,
                 validator: (value) {
                   if (value!.isEmpty) {
@@ -204,7 +157,10 @@ class _RegisterViewState extends State<RegisterView> {
               height: 50,
               padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
               child: ElevatedButton(
-                onPressed: _iniciar,
+                onPressed: () {
+                  _iniciar();
+                  Navigator.pushNamed(context, '/home');
+                },
                 child: const Text("Registrar"),
               ),
             ),

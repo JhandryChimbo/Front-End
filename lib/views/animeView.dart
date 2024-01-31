@@ -83,6 +83,17 @@ class _AnimeViewState extends State<AnimeView> {
               ),
               // Mostrar las imágenes basadas en la lista de nombres
               _buildImages(anime['archivo']), // Pasar el nombre de la imagen
+              const SizedBox(height: 10),
+              ElevatedButton(
+                onPressed: () {
+                  if (anime['id'] != null) {
+                    _comentarAnime(anime['id'].toString());
+                  } else {
+                    print('La propiedad "id" es nula en este anime.');
+                  }
+                },
+                child: const Text('Comentar'),
+              ),
             ],
           ),
         ),
@@ -92,14 +103,20 @@ class _AnimeViewState extends State<AnimeView> {
 
   Widget _buildImages(String nombreDeImagen) {
     // Construir la URL completa de la imagen
-    String imageUrl = 'http://192.168.0.105:3000/api/images/$nombreDeImagen';
+    String imageUrl = 'http://localhost:3000/api/images/$nombreDeImagen';
 
     return Image.network(
       imageUrl,
       height: 100,
-      width: 100, 
+      width: 100,
       fit: BoxFit.cover,
     );
+  }
+
+  void _comentarAnime(String animeId) {
+    // Implementar la lógica para manejar la acción de comentario del anime
+    print('Comentario del anime con ID: $animeId');
+    // Puedes abrir un nuevo cuadro de diálogo, navegar a una nueva pantalla, etc.
   }
 
   @override

@@ -46,41 +46,31 @@ class FacadeService {
   }
 
   Future<CrearUsuarioSW> crearCuentaUsuario(Map<String, String> mapa) async {
-    Map<String, String> header = {'Content-Type': 'application/json'};
-    final String url = '${c.URL}admin/persona/usuario/save';
-    final uri = Uri.parse(url);
-    CrearUsuarioSW isw = CrearUsuarioSW();
-    try {
-      final response =
-          await http.post(uri, headers: header, body: jsonEncode(mapa));
-      if (response.statusCode != 200) {
-        if (response.statusCode == 404) {
-          isw.code = 404;
-          isw.msg = "Error";
-          isw.tag = "Recurso no encontrado";
-          isw.datos = {};
-        } else {
-          Map<dynamic, dynamic> mapa = jsonDecode(response.body);
-          isw.code = mapa['code'];
-          isw.msg = mapa['msg'];
-          isw.tag = mapa['tag'];
-          isw.datos = mapa['datos'];
-        }
-      } else {
-        Map<dynamic, dynamic> mapa = jsonDecode(response.body);
-        isw.code = mapa['code'];
-        isw.msg = mapa['msg'];
-        isw.tag = mapa['tag'];
-        isw.datos = mapa['datos'];
-      }
-    } catch (e) {
-      isw.code = 500;
-      isw.msg = "Error";
-      isw.tag = "Error Inesperado";
-      isw.datos = {};
-    }
-    return isw;
+  Map<String, String> header = {'Content-Type': 'application/json'};
+  final String url = '${c.URL}admin/persona/usuario/save';
+  final uri = Uri.parse(url);
+  CrearUsuarioSW isw = CrearUsuarioSW();
+
+  try {
+    final response = await http.post(uri, headers: header, body: jsonEncode(mapa));
+
+    Map<dynamic, dynamic> mapaRespuesta = jsonDecode(response.body);
+
+    isw.code = mapaRespuesta['code'];
+    isw.msg = mapaRespuesta['msg'];
+    isw.tag = mapaRespuesta['tag'];
+    isw.datos = mapaRespuesta['datos'];
+
+  } catch (e) {
+    isw.code = 500;
+    isw.msg = "Error";
+    isw.tag = "Error Inesperado";
+    isw.datos = {};
   }
+
+  return isw;
+}
+
 
   Future<RespuestaGenerica> listarAnimes() async {
     return await c.solicitudGet('animes', false);
