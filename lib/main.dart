@@ -31,11 +31,12 @@ class MyApp extends StatelessWidget {
         // Notice that the counter didn't reset back to zero; the application
         // state is not lost during the reload. To reset the state, use hot
         // restart instead.
-        
+
         //
         // This works for code too, not just values: Most code changes can be
         // tested with just a hot reload.
-        colorScheme: ColorScheme.fromSeed(seedColor: Color.fromARGB(255, 35, 64, 179)),
+        colorScheme:
+            ColorScheme.fromSeed(seedColor: Color.fromARGB(255, 35, 64, 179)),
         useMaterial3: true,
       ),
       home: const SessionView(),
@@ -45,8 +46,12 @@ class MyApp extends StatelessWidget {
         '/home': (context) => const SessionView(),
         '/register': (context) => const RegisterView(),
         '/animes': (context) => const AnimeView(),
-        '/comentario': (context) => const ComentarioView(),
-
+        '/comentario': (context) => const ComentarioAnimeView(
+              animeId: '',
+              animeTitulo: '',
+              animeCuerpo: '',
+              animeFecha: '',
+            ),
       },
       onGenerateRoute: (settings) {
         return MaterialPageRoute(builder: (context) => const Page404());

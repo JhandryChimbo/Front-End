@@ -1,159 +1,175 @@
+import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:noticias/controls/servicio_back/FacadeService.dart';
-import 'package:noticias/widgets/drawer.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:noticias/controls/utiles/Utiles.dart';
 
-class ComentarioView extends StatefulWidget {
-  const ComentarioView({Key? key}) : super(key: key);
+class ComentarioAnimeView extends StatefulWidget {
+  final String animeId;
+  final String animeTitulo;
+  final String animeCuerpo;
+  final String animeFecha;
+
+  const ComentarioAnimeView({
+    Key? key,
+    required this.animeId,
+    required this.animeTitulo,
+    required this.animeCuerpo,
+    required this.animeFecha,
+  }) : super(key: key);
 
   @override
-  _ComentarioViewState createState() => _ComentarioViewState();
+  _ComentarioAnimeViewState createState() => _ComentarioAnimeViewState();
 }
 
-class _ComentarioViewState extends State<ComentarioView> {
-  List<Map<String, dynamic>> animes = [];
-  List<String> nombresDeImagenes = [];
+class _ComentarioAnimeViewState extends State<ComentarioAnimeView> {
+  final _formKey = GlobalKey<FormState>();
+  final TextEditingController comentarioController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Comentar'),
-      ),
-      drawer: AppDrawer(),
-      body: _buildAnimeList(),
-    );
-  }
-
-  Widget _buildAnimeList() {
-    List<Map<String, dynamic>> animesActivos =
-        animes.where((anime) => anime['estado'] == true).toList();
-
-    if (animesActivos.isEmpty) {
-      return const Center(child: Text('No hay animes activos.'));
-    } else {
-      return ListView.separated(
-        itemCount: animesActivos.length,
-        separatorBuilder: (context, index) => const SizedBox(height: 10),
-        itemBuilder: (context, index) {
-          var anime = animesActivos[index];
-          return _buildAnimeCard(anime);
-        },
-      );
-    }
-  }
-
-  Widget _buildAnimeCard(Map<String, dynamic> anime) {
-    return Card(
-      elevation: 3,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(10.0),
-      ),
-      child: InkWell(
-        onTap: () {
-          // Acción al tocar la tarjeta (si es necesario).
-        },
-        child: Container(
-          padding: const EdgeInsets.all(10),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                anime['titulo'],
-                style: const TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const SizedBox(height: 5),
-              Text('Cuerpo: ${anime['cuerpo']}'),
-              Text('Tipo de Anime: ${anime['tipo_anime']}'),
-              Text('Fecha Estreno: ${anime['fecha']}'),
-              Text('Archivo: ${anime['archivo']}'),
-              Text(
-                'Estado: ${anime['estado']}',
-                style: TextStyle(
-                  color: anime['estado'] ? Colors.green : Colors.red,
-                ),
-              ),
-              Text(
-                'Autor: ${anime['persona']['nombres']} ${anime['persona']['apellidos']}',
-                style: const TextStyle(
-                  fontStyle: FontStyle.italic,
-                ),
-              ),
-              // Mostrar las imágenes basadas en la lista de nombres
-              _buildImages(anime['archivo']), // Pasar el nombre de la imagen
-              const SizedBox(height: 10),
-              ElevatedButton(
-                onPressed: () {
-                  if (anime['id'] != null) {
-                    _comentarAnime(anime['id'].toString());
-                  } else {
-                    print('La propiedad "id" es nula en este anime.');
-                  }
-                },
-                child: const Text('Comentar'),
-              ),
-            ],
-          ),
+    return Form(
+      key: _formKey,
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text('Comentarios de ${widget.animeTitulo}'),
+        ),
+        body: ListView(
+          shrinkWrap: true,
+          children: [
+            _buildAnimeCard(),
+            _buildComentarioForm(),
+          ],
         ),
       ),
     );
   }
 
-  Widget _buildImages(String nombreDeImagen) {
-    // Construir la URL completa de la imagen
-    String imageUrl = 'http://10.20.139.177:3000/api/images/$nombreDeImagen';
-
-    return Image.network(
-      imageUrl,
-      height: 100,
-      width: 100,
-      fit: BoxFit.cover,
+  Widget _buildAnimeCard() {
+    return Card(
+      elevation: 3,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(10.0),
+      ),
+      child: Container(
+        padding: const EdgeInsets.all(10),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              widget.animeTitulo,
+              style: const TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 5),
+            Text('Cuerpo: ${widget.animeCuerpo}'),
+            Text('Fecha Estreno: ${widget.animeFecha}'),
+            const SizedBox(height: 10),
+            // Agrega aquí tu lógica para mostrar y manejar los comentarios
+          ],
+        ),
+      ),
     );
   }
 
-  void _comentarAnime(String animeId) {
-    // Implementar la lógica para manejar la acción de comentario del anime
-    print('Comentario del anime con ID: $animeId');
-    // Puedes abrir un nuevo cuadro de diálogo, navegar a una nueva pantalla, etc.
+  Widget _buildComentarioForm() {
+    return Padding(
+      padding: const EdgeInsets.all(10),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            'Agregar Comentario',
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: 10),
+          TextFormField(
+            controller: comentarioController,
+            validator: (value) {
+              if (value!.isEmpty) {
+                return 'Debe ingresar un comentario';
+              }
+              return null;
+            },
+            decoration: const InputDecoration(
+              labelText: 'Comentario',
+              border: OutlineInputBorder(),
+            ),
+            maxLines: 3,
+          ),
+          const SizedBox(height: 10),
+          ElevatedButton(
+            onPressed: () {
+              _enviarComentario();
+            },
+            child: const Text('Enviar Comentario'),
+          ),
+        ],
+      ),
+    );
   }
 
-  @override
-  void initState() {
-    super.initState();
-    _listarAnimes();
-    _listarNombresDeImagenes();
-  }
+  Future<void> _enviarComentario() async {
+    print('ID del anime al enviar el comentario: ${widget.animeId}');
 
-  Future<void> _listarAnimes() async {
-    try {
-      FacadeService servicio = FacadeService();
-      var response = await servicio.listarAnimes();
+    if (_formKey.currentState!.validate()) {
+      try {
+        // Obtener la ubicación actual
+        Position position = await Geolocator.getCurrentPosition(
+          desiredAccuracy: LocationAccuracy.high,
+        );
 
-      if (response.code == 200) {
-        setState(() {
-          animes = List<Map<String, dynamic>>.from(response.datos);
+        // Utilizar position.latitude y position.longitude para obtener latitud y longitud
+        double latitud = position.latitude;
+        double longitud = position.longitude;
+
+        // Obtener la fecha actual
+        DateTime now = DateTime.now();
+        String fecha = now.toIso8601String();
+
+        // Obtener la ID de la persona logeada (aquí estoy usando un valor ficticio, reemplázalo según tu lógica de autenticación)
+
+        Utiles util = Utiles();
+        String? idPersonaLogeada = await util.getValue('id');
+
+        // Obtener la ID del anime al cual se está comentando
+        String idAnime = widget.animeId;
+
+        // Lógica para enviar el comentario
+        FacadeService servicio = FacadeService();
+        Map<String, dynamic> comentarioMap = {
+          'cuerpo': comentarioController.text,
+          'fecha': fecha,
+          'longitud': longitud,
+          'latitud': latitud,
+          'persona': idPersonaLogeada,
+          'anime': idAnime,
+        };
+
+        servicio.enviarComentario(comentarioMap).then((response) {
+          if (response.code == 200) {
+            const SnackBar msg = SnackBar(content: Text('Comentario enviado'));
+            ScaffoldMessenger.of(context).showSnackBar(msg);
+
+            // Limpiar el TextFormField después de enviar el comentario exitosamente
+            comentarioController.clear();
+          } else {
+            const SnackBar msg =
+                SnackBar(content: Text('Error al enviar comentario'));
+            ScaffoldMessenger.of(context).showSnackBar(msg);
+          }
+        }).catchError((error) {
+          print('Error al enviar comentario: $error');
         });
-      } else {
-        print('Error: ${response.msg}');
+      } catch (e) {
+        print('Error al obtener la ubicación: $e');
+        // Manejar el error según sea necesario
       }
-    } catch (e) {
-      print('Excepción: $e');
-    }
-  }
-
-  Future<void> _listarNombresDeImagenes() async {
-    try {
-      // Llamada a la función para obtener los nombres de imágenes
-      FacadeService servicio = FacadeService();
-      List<String> nombres = await servicio.obtenerNombresDeImagenes();
-
-      setState(() {
-        nombresDeImagenes = nombres;
-      });
-    } catch (e) {
-      print('Error al obtener nombres de imágenes: $e');
     }
   }
 }

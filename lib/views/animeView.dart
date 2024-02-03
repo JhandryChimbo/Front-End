@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:noticias/controls/servicio_back/FacadeService.dart';
+import 'package:noticias/views/comentarioView.dart';
 import 'package:noticias/widgets/drawer.dart';
-import 'package:geolocator/geolocator.dart';
 
 class AnimeView extends StatefulWidget {
   const AnimeView({Key? key}) : super(key: key);
@@ -13,8 +13,6 @@ class AnimeView extends StatefulWidget {
 class _AnimeViewState extends State<AnimeView> {
   List<Map<String, dynamic>> animes = [];
   List<String> nombresDeImagenes = [];
-  late Position ubicacionActual;
-  
 
   @override
   Widget build(BuildContext context) {
@@ -52,9 +50,7 @@ class _AnimeViewState extends State<AnimeView> {
         borderRadius: BorderRadius.circular(10.0),
       ),
       child: InkWell(
-        onTap: () {
-          // Acción al tocar la tarjeta (si es necesario).
-        },
+        onTap: () {},
         child: Container(
           padding: const EdgeInsets.all(10),
           child: Column(
@@ -90,20 +86,24 @@ class _AnimeViewState extends State<AnimeView> {
               ElevatedButton(
                 onPressed: () {
                   if (anime['id'] != null) {
-                    _comentarAnime(anime['id'].toString());
-                    Navigator.pushReplacementNamed(context, '/comentario');
+                    print('ID del anime seleccionado: ${anime['id']}');
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => ComentarioAnimeView(
+                          animeId: anime['id'].toString(),
+                          animeTitulo: anime['titulo'],
+                          animeCuerpo: anime['cuerpo'],
+                          animeFecha: anime['fecha'],
+                        ),
+                      ),
+                    );
                   } else {
                     print('La propiedad "id" es nula en este anime.');
                   }
                 },
                 child: const Text('Comentar'),
               ),
-              ElevatedButton(
-                  onPressed: () {
-                    _obtenerUbicacionActual();
-                  },
-                  child: const Text('Obtener Ubicación'),
-                ),
             ],
           ),
         ),
@@ -134,36 +134,6 @@ class _AnimeViewState extends State<AnimeView> {
     super.initState();
     _listarAnimes();
     _listarNombresDeImagenes();
-  }
-
-  void _obtenerUbicacionActual() async {
-    try {
-      // Verificar si se tienen permisos de ubicación
-      LocationPermission permission = await Geolocator.checkPermission();
-      if (permission == LocationPermission.denied) {
-        // Si no hay permisos, solicitarlos
-        permission = await Geolocator.requestPermission();
-        if (permission != LocationPermission.whileInUse &&
-            permission != LocationPermission.always) {
-          // El usuario no otorgó permisos, manejar según tus necesidades
-          
-          return;
-        }
-      }
-
-      // Obtener la ubicación actual
-      Position position = await Geolocator.getCurrentPosition(
-          desiredAccuracy: LocationAccuracy.high);
-
-      setState(() {
-        ubicacionActual = position;
-      });
-
-      // Mostrar la ubicación en la consola (puedes utilizarla como desees)
-      print('Ubicación Actual: ${position.latitude}, ${position.longitude}');
-    } catch (e) {
-      print('Error al obtener la ubicación: $e');
-    }
   }
 
   Future<void> _listarAnimes() async {

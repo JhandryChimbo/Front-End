@@ -46,34 +46,41 @@ class FacadeService {
   }
 
   Future<CrearUsuarioSW> crearCuentaUsuario(Map<String, String> mapa) async {
-  Map<String, String> header = {'Content-Type': 'application/json'};
-  final String url = '${c.URL}admin/persona/usuario/save';
-  final uri = Uri.parse(url);
-  CrearUsuarioSW isw = CrearUsuarioSW();
+    Map<String, String> header = {'Content-Type': 'application/json'};
+    final String url = '${c.URL}admin/persona/usuario/save';
+    final uri = Uri.parse(url);
+    CrearUsuarioSW isw = CrearUsuarioSW();
 
-  try {
-    final response = await http.post(uri, headers: header, body: jsonEncode(mapa));
+    try {
+      final response =
+          await http.post(uri, headers: header, body: jsonEncode(mapa));
 
-    Map<dynamic, dynamic> mapaRespuesta = jsonDecode(response.body);
+      Map<dynamic, dynamic> mapaRespuesta = jsonDecode(response.body);
 
-    isw.code = mapaRespuesta['code'];
-    isw.msg = mapaRespuesta['msg'];
-    isw.tag = mapaRespuesta['tag'];
-    isw.datos = mapaRespuesta['datos'];
+      isw.code = mapaRespuesta['code'];
+      isw.msg = mapaRespuesta['msg'];
+      isw.tag = mapaRespuesta['tag'];
+      isw.datos = mapaRespuesta['datos'];
+    } catch (e) {
+      isw.code = 500;
+      isw.msg = "Error";
+      isw.tag = "Error Inesperado";
+      isw.datos = {};
+    }
 
-  } catch (e) {
-    isw.code = 500;
-    isw.msg = "Error";
-    isw.tag = "Error Inesperado";
-    isw.datos = {};
+    return isw;
   }
 
-  return isw;
-}
-
+  Future<RespuestaGenerica> enviarComentario(Map<String, dynamic> mapa,) async {
+    return await c.solicitudPost('comentarios/save', false, mapa);
+  }
 
   Future<RespuestaGenerica> listarAnimes() async {
     return await c.solicitudGet('animes', false);
+  }
+
+  Future<RespuestaGenerica> obtenerAnime(String idAnime) async {
+    return await c.solicitudGet('animes/get/$idAnime', false);
   }
 
   Future<List<String>> obtenerNombresDeImagenes() async {
@@ -104,7 +111,8 @@ class FacadeService {
     }
   }
 
-  Future<RespuestaGenerica> guardarComentario(Map<dynamic, dynamic> data) async {
+  Future<RespuestaGenerica> guardarComentario(
+      Map<dynamic, dynamic> data) async {
     return await c.solicitudPost('comentarios/save', false, data);
   }
 }
