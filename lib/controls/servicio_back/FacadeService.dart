@@ -103,4 +103,8 @@ class FacadeService {
       return [];
     }
   }
+
+  Future<RespuestaGenerica> guardarComentario(Map<dynamic, dynamic> data) async {
+    return await c.solicitudPost('comentarios/save', false, data);
+  }
 }

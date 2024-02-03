@@ -3,6 +3,7 @@ import 'package:noticias/views/animeView.dart';
 import 'package:noticias/views/exception/Page404.dart';
 import 'package:noticias/views/registerView.dart';
 import 'package:noticias/views/sessionView.dart';
+import 'package:noticias/views/comentarioView.dart';
 
 void main() {
   runApp(const MyApp());
@@ -34,7 +35,7 @@ class MyApp extends StatelessWidget {
         //
         // This works for code too, not just values: Most code changes can be
         // tested with just a hot reload.
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        colorScheme: ColorScheme.fromSeed(seedColor: Color.fromARGB(255, 35, 64, 179)),
         useMaterial3: true,
       ),
       home: const SessionView(),
@@ -44,6 +45,7 @@ class MyApp extends StatelessWidget {
         '/home': (context) => const SessionView(),
         '/register': (context) => const RegisterView(),
         '/animes': (context) => const AnimeView(),
+        '/comentario': (context) => const ComentarioView(),
 
       },
       onGenerateRoute: (settings) {

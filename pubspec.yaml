@@ -34,7 +34,7 @@ dependencies:
   http: "0.13.0"
   flutter_secure_storage: ^8.0.0
   another_flushbar: ^1.10.28
-  
+  geolocator: ^10.1.0
   
 
 

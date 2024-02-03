@@ -1,26 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:noticias/controls/servicio_back/FacadeService.dart';
 import 'package:noticias/widgets/drawer.dart';
-import 'package:geolocator/geolocator.dart';
 
-class AnimeView extends StatefulWidget {
-  const AnimeView({Key? key}) : super(key: key);
+class ComentarioView extends StatefulWidget {
+  const ComentarioView({Key? key}) : super(key: key);
 
   @override
-  _AnimeViewState createState() => _AnimeViewState();
+  _ComentarioViewState createState() => _ComentarioViewState();
 }
 
-class _AnimeViewState extends State<AnimeView> {
+class _ComentarioViewState extends State<ComentarioView> {
   List<Map<String, dynamic>> animes = [];
   List<String> nombresDeImagenes = [];
-  late Position ubicacionActual;
-  
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Lista de Animes'),
+        title: const Text('Comentar'),
       ),
       drawer: AppDrawer(),
       body: _buildAnimeList(),
@@ -91,19 +88,12 @@ class _AnimeViewState extends State<AnimeView> {
                 onPressed: () {
                   if (anime['id'] != null) {
                     _comentarAnime(anime['id'].toString());
-                    Navigator.pushReplacementNamed(context, '/comentario');
                   } else {
                     print('La propiedad "id" es nula en este anime.');
                   }
                 },
                 child: const Text('Comentar'),
               ),
-              ElevatedButton(
-                  onPressed: () {
-                    _obtenerUbicacionActual();
-                  },
-                  child: const Text('Obtener Ubicación'),
-                ),
             ],
           ),
         ),
@@ -113,7 +103,7 @@ class _AnimeViewState extends State<AnimeView> {
 
   Widget _buildImages(String nombreDeImagen) {
     // Construir la URL completa de la imagen
-    String imageUrl = 'http://192.168.0.105:3000/api/images/$nombreDeImagen';
+    String imageUrl = 'http://10.20.139.177:3000/api/images/$nombreDeImagen';
 
     return Image.network(
       imageUrl,
@@ -134,36 +124,6 @@ class _AnimeViewState extends State<AnimeView> {
     super.initState();
     _listarAnimes();
     _listarNombresDeImagenes();
-  }
-
-  void _obtenerUbicacionActual() async {
-    try {
-      // Verificar si se tienen permisos de ubicación
-      LocationPermission permission = await Geolocator.checkPermission();
-      if (permission == LocationPermission.denied) {
-        // Si no hay permisos, solicitarlos
-        permission = await Geolocator.requestPermission();
-        if (permission != LocationPermission.whileInUse &&
-            permission != LocationPermission.always) {
-          // El usuario no otorgó permisos, manejar según tus necesidades
-          
-          return;
-        }
-      }
-
-      // Obtener la ubicación actual
-      Position position = await Geolocator.getCurrentPosition(
-          desiredAccuracy: LocationAccuracy.high);
-
-      setState(() {
-        ubicacionActual = position;
-      });
-
-      // Mostrar la ubicación en la consola (puedes utilizarla como desees)
-      print('Ubicación Actual: ${position.latitude}, ${position.longitude}');
-    } catch (e) {
-      print('Error al obtener la ubicación: $e');
-    }
   }
 
   Future<void> _listarAnimes() async {
