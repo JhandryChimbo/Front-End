@@ -38,10 +38,10 @@ class _SessionViewState extends State<SessionView> {
                 SnackBar(content: Text("BIENVENIDO ${value.datos['user']}"));
             ScaffoldMessenger.of(context).showSnackBar(msg);
             Navigator.pushNamedAndRemoveUntil(
-                context,
-                '/animes',
-                (Route<dynamic> route) => false,
-              );
+              context,
+              '/animes',
+              (Route<dynamic> route) => false,
+            );
           } else {
             final SnackBar msg = SnackBar(content: Text("Error ${value.tag}"));
             ScaffoldMessenger.of(context).showSnackBar(msg);

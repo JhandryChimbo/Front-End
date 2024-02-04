@@ -28,9 +28,7 @@ class AppDrawer extends StatelessWidget {
                   accountName: Text(user ?? 'No User'),
                   accountEmail: null,
                   currentAccountPicture: GestureDetector(
-                    onTap: () {
-                      
-                    },
+                    onTap: () {},
                     child: const CircleAvatar(
                       child: Icon(
                         Icons.account_circle,
@@ -58,7 +56,7 @@ class AppDrawer extends StatelessWidget {
                 ),
                 ListTile(
                   leading: const Icon(Icons.exit_to_app),
-                  title: const Text('Salir'),
+                  title: const Text('Cerrar Sesión'),
                   onTap: () {
                     _mostrarDialogoConfirmacion(context);
                   },
@@ -92,7 +90,11 @@ class AppDrawer extends StatelessWidget {
             TextButton(
               onPressed: () {
                 utiles.removeAllItem();
-                Navigator.pushReplacementNamed(context, '/home');
+                Navigator.pushNamedAndRemoveUntil(
+                  context,
+                  '/home',
+                  (Route<dynamic> route) => false,
+                );
               },
               child: const Text('Salir'),
             ),

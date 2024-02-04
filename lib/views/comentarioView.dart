@@ -10,20 +10,31 @@ class ComentarioAnimeView extends StatefulWidget {
   final String animeFecha;
 
   const ComentarioAnimeView({
-    Key? key,
+    super.key,
     required this.animeId,
     required this.animeTitulo,
     required this.animeCuerpo,
     required this.animeFecha,
-  }) : super(key: key);
+  });
 
   @override
   _ComentarioAnimeViewState createState() => _ComentarioAnimeViewState();
 }
 
 class _ComentarioAnimeViewState extends State<ComentarioAnimeView> {
+  List<Map<String, dynamic>> comentarios = [];
   final _formKey = GlobalKey<FormState>();
   final TextEditingController comentarioController = TextEditingController();
+
+  int comentariosPorPagina = 10;
+  int paginaActual = 1;
+  bool cargandoComentarios = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _listarComentarios();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -33,11 +44,14 @@ class _ComentarioAnimeViewState extends State<ComentarioAnimeView> {
         appBar: AppBar(
           title: Text('Comentarios de ${widget.animeTitulo}'),
         ),
-        body: ListView(
-          shrinkWrap: true,
+        body: Column(
           children: [
             _buildAnimeCard(),
             _buildComentarioForm(),
+            Expanded(
+              child: _buildComentariosList(),
+            ),
+            _buildPaginationButtons(),
           ],
         ),
       ),
@@ -66,7 +80,6 @@ class _ComentarioAnimeViewState extends State<ComentarioAnimeView> {
             Text('Cuerpo: ${widget.animeCuerpo}'),
             Text('Fecha Estreno: ${widget.animeFecha}'),
             const SizedBox(height: 10),
-            // Agrega aquí tu lógica para mostrar y manejar los comentarios
           ],
         ),
       ),
@@ -113,6 +126,79 @@ class _ComentarioAnimeViewState extends State<ComentarioAnimeView> {
     );
   }
 
+  Widget _buildComentariosList() {
+    return ListView.builder(
+      itemCount: comentarios.length,
+      itemBuilder: (context, index) {
+        String nombrePersona = comentarios[index]['persona']['nombres'];
+        String apellidosPersona = comentarios[index]['persona']['apellidos'];
+
+        return ListTile(
+          title: Text('$nombrePersona $apellidosPersona dice:'),
+          subtitle: Text(comentarios[index]['cuerpo']),
+        );
+      },
+    );
+  }
+
+  Widget _buildPaginationButtons() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        ElevatedButton(
+          onPressed: paginaActual > 1 ? _retrocederPagina : null,
+          child: const Text('Anterior'),
+        ),
+        const SizedBox(width: 10),
+        ElevatedButton(
+          onPressed: _cargarMasComentarios,
+          child: const Text('Siguiente'),
+        ),
+      ],
+    );
+  }
+
+  void _retrocederPagina() {
+    if (paginaActual > 1) {
+      setState(() {
+        paginaActual--;
+        _listarComentarios();
+      });
+    }
+  }
+
+  Future<void> _cargarMasComentarios() async {
+    if (!cargandoComentarios) {
+      setState(() {
+        cargandoComentarios = true;
+      });
+
+      try {
+        FacadeService servicio = FacadeService();
+        var response = await servicio.listarComentarios(
+          widget.animeId,
+          pagina: paginaActual + 1,
+          cantidad: comentariosPorPagina,
+        );
+
+        if (response.code == 200) {
+          setState(() {
+            comentarios.addAll(List<Map<String, dynamic>>.from(response.datos));
+            paginaActual++;
+          });
+        } else {
+          print('Error: ${response.msg}');
+        }
+      } catch (e) {
+        print('Excepción: $e');
+      } finally {
+        setState(() {
+          cargandoComentarios = false;
+        });
+      }
+    }
+  }
+
   Future<void> _enviarComentario() async {
     print('ID del anime al enviar el comentario: ${widget.animeId}');
 
@@ -122,24 +208,20 @@ class _ComentarioAnimeViewState extends State<ComentarioAnimeView> {
         Position position = await Geolocator.getCurrentPosition(
           desiredAccuracy: LocationAccuracy.high,
         );
-
-        // Utilizar position.latitude y position.longitude para obtener latitud y longitud
         double latitud = position.latitude;
         double longitud = position.longitude;
 
-        // Obtener la fecha actual
+        // Fecha
         DateTime now = DateTime.now();
         String fecha = now.toIso8601String();
 
-        // Obtener la ID de la persona logeada (aquí estoy usando un valor ficticio, reemplázalo según tu lógica de autenticación)
-
+        //Persona
         Utiles util = Utiles();
         String? idPersonaLogeada = await util.getValue('id');
 
-        // Obtener la ID del anime al cual se está comentando
+        // Id anime
         String idAnime = widget.animeId;
 
-        // Lógica para enviar el comentario
         FacadeService servicio = FacadeService();
         Map<String, dynamic> comentarioMap = {
           'cuerpo': comentarioController.text,
@@ -167,8 +249,28 @@ class _ComentarioAnimeViewState extends State<ComentarioAnimeView> {
         });
       } catch (e) {
         print('Error al obtener la ubicación: $e');
-        // Manejar el error según sea necesario
       }
+    }
+  }
+
+  Future<void> _listarComentarios() async {
+    try {
+      FacadeService servicio = FacadeService();
+      var response = await servicio.listarComentarios(
+        widget.animeId,
+        pagina: paginaActual,
+        cantidad: comentariosPorPagina,
+      );
+
+      if (response.code == 200) {
+        setState(() {
+          comentarios = List<Map<String, dynamic>>.from(response.datos);
+        });
+      } else {
+        print('Error: ${response.msg}');
+      }
+    } catch (e) {
+      print('Excepción: $e');
     }
   }
 }

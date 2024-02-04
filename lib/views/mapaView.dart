@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:noticias/widgets/drawer.dart';
+import 'package:noticias/controls/servicio_back/FacadeService.dart';
 
 const mapbox_access_token =
     'pk.eyJ1IjoiamhhbmRyeS1jaGltYm8iLCJhIjoiY2xzNnB0OHd5MHRtbjJqbXJrMHpkeGZ4MCJ9.r1HKgPunHG6XaBDrmuKLpw';
@@ -16,6 +17,7 @@ class MapaView extends StatefulWidget {
 }
 
 class _MapaViewState extends State<MapaView> {
+  List<Map<String, dynamic>> comentarios = [];
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -42,7 +44,7 @@ class _MapaViewState extends State<MapaView> {
               'https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}',
           additionalOptions: const {
             'accessToken': mapbox_access_token,
-            'id': 'mapbox/dark-v11'
+            'id': 'mapbox/streets-v12'
           },
         ),
         const MarkerLayer(
@@ -61,5 +63,34 @@ class _MapaViewState extends State<MapaView> {
         ),
       ],
     );
+  }
+
+  Widget _buildComentariosList() {
+    return ListView.builder(
+      itemCount: comentarios.length,
+      itemBuilder: (context, index) {
+        return ListTile(
+          title: Text(comentarios[index]['longitud']),
+          subtitle: Text(comentarios[index]['latitud']),
+        );
+      },
+    );
+  }
+
+  Future<void> _listarComentarios() async {
+    try {
+      FacadeService servicio = FacadeService();
+      var response = await servicio.listarComentariosMapa();
+
+      if (response.code == 200) {
+        setState(() {
+          comentarios = List<Map<String, dynamic>>.from(response.datos);
+        });
+      } else {
+        print('Error: ${response.msg}');
+      }
+    } catch (e) {
+      print('Excepción: $e');
+    }
   }
 }

@@ -71,12 +71,23 @@ class FacadeService {
     return isw;
   }
 
-  Future<RespuestaGenerica> enviarComentario(Map<String, dynamic> mapa,) async {
+  Future<RespuestaGenerica> enviarComentario(
+    Map<String, dynamic> mapa,
+  ) async {
     return await c.solicitudPost('comentarios/save', false, mapa);
   }
 
   Future<RespuestaGenerica> listarAnimes() async {
     return await c.solicitudGet('animes', false);
+  }
+
+  Future<RespuestaGenerica> listarComentarios(String animeId,
+      {required int pagina, required int cantidad}) async {
+    return await c.solicitudGet('comentarios', false);
+  }
+
+  Future<RespuestaGenerica> listarComentariosMapa() async {
+    return await c.solicitudGet('comentarios', false);
   }
 
   Future<RespuestaGenerica> obtenerAnime(String idAnime) async {

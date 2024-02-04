@@ -45,7 +45,8 @@ class _AnimeViewState extends State<AnimeView> {
 
   Widget _buildAnimeCard(Map<String, dynamic> anime) {
     return Card(
-      elevation: 3,
+      elevation: 5,
+      shadowColor: Colors.grey,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(10.0),
       ),
@@ -67,7 +68,6 @@ class _AnimeViewState extends State<AnimeView> {
               Text('Cuerpo: ${anime['cuerpo']}'),
               Text('Tipo de Anime: ${anime['tipo_anime']}'),
               Text('Fecha Estreno: ${anime['fecha']}'),
-              Text('Archivo: ${anime['archivo']}'),
               Text(
                 'Estado: ${anime['estado']}',
                 style: TextStyle(
@@ -80,7 +80,6 @@ class _AnimeViewState extends State<AnimeView> {
                   fontStyle: FontStyle.italic,
                 ),
               ),
-              // Mostrar las imágenes basadas en la lista de nombres
               _buildImages(anime['archivo']), // Pasar el nombre de la imagen
               const SizedBox(height: 10),
               ElevatedButton(
@@ -112,7 +111,6 @@ class _AnimeViewState extends State<AnimeView> {
   }
 
   Widget _buildImages(String nombreDeImagen) {
-    // Construir la URL completa de la imagen
     String imageUrl = 'http://192.168.0.105:3000/api/images/$nombreDeImagen';
 
     return Image.network(
@@ -121,12 +119,6 @@ class _AnimeViewState extends State<AnimeView> {
       width: 100,
       fit: BoxFit.cover,
     );
-  }
-
-  void _comentarAnime(String animeId) {
-    // Implementar la lógica para manejar la acción de comentario del anime
-    print('Comentario del anime con ID: $animeId');
-    // Puedes abrir un nuevo cuadro de diálogo, navegar a una nueva pantalla, etc.
   }
 
   @override
@@ -155,7 +147,6 @@ class _AnimeViewState extends State<AnimeView> {
 
   Future<void> _listarNombresDeImagenes() async {
     try {
-      // Llamada a la función para obtener los nombres de imágenes
       FacadeService servicio = FacadeService();
       List<String> nombres = await servicio.obtenerNombresDeImagenes();
 
