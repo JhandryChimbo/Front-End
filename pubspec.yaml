@@ -31,11 +31,12 @@ dependencies:
   flutter:
     sdk: flutter
   validators: ^3.0.0
-  http: "0.13.0"
+  http: ^1.2.0
   flutter_secure_storage: ^8.0.0
   another_flushbar: ^1.10.28
   geolocator: ^10.1.0
-  
+  flutter_map: ^6.1.0
+  latlong2: ^0.9.0 
 
 
   # The following adds the Cupertino Icons font to your application.
