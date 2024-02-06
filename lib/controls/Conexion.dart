@@ -8,13 +8,13 @@ class Conexion {
   // final String URL = "http://localhost:3000/api/";
   // final String URL_MEDIA = "http://localhost:3000/api/images";
 
-  //DE MI CASA XD
-  final String URL = "http://192.168.0.105:3000/api/";
-  final String URL_MEDIA = "http://192.168.0.105:3000/api/images/";
+  // CASA
+  // final String URL = "http://192.168.0.105:3000/api/";
+  // final String URL_MEDIA = "http://192.168.0.105:3000/api/images/";
 
-  //DE LA UNIVERSIDAD
-  // final String URL = "http://10.20.203.157:3000/api/";
-  // final String URL_MEDIA = "http://10.20.203.157:3000/api/images/";
+  // UNIVERSIDAD
+  final String URL = "http://10.20.137.206:3000/api/";
+  final String URL_MEDIA = "http://10.20.137.206:3000/api/images/";
   static bool NO_TOKEN = false;
   //auto-token
   Future<RespuestaGenerica> solicitudGet(String recurso, bool token) async {
@@ -25,13 +25,16 @@ class Conexion {
       String? tokenA = await util.getValue("token");
       _header = {
         "Content-Type": "application/json",
-        "auto-token": tokenA.toString()
+        "auto-token": tokenA.toString(),
       };
     }
+
     final String _url = URL + recurso;
     final uri = Uri.parse(_url);
+
     try {
       final response = await http.get(uri, headers: _header);
+
       if (response.statusCode != 200) {
         if (response.statusCode == 404) {
           return _response(404, "Recurso no encontrado", []);
@@ -55,13 +58,60 @@ class Conexion {
     if (token) {
       Utiles util = Utiles();
       String? token = await util.getValue('token');
-      _header = {'Content-Type': 'application/json', 'token': token.toString()};
+      _header = {
+        'Content-Type': 'application/json',
+        'token': token.toString(),
+      };
     }
+
     final String _url = URL + recurso;
     final uri = Uri.parse(_url);
+
     try {
-      final response =
-          await http.post(uri, headers: _header, body: jsonEncode(mapa));
+      final response = await http.post(
+        uri,
+        headers: _header,
+        body: jsonEncode(mapa),
+      );
+
+      if (response.statusCode != 200) {
+        if (response.statusCode == 404) {
+          return _response(404, "Recurso no encontrado", []);
+        } else {
+          Map<dynamic, dynamic> mapa = jsonDecode(response.body);
+          return _response(mapa['code'], mapa['msg'], mapa['datos']);
+        }
+      } else {
+        Map<dynamic, dynamic> mapa = jsonDecode(response.body);
+        return _response(mapa['code'], mapa['msg'], mapa['datos']);
+      }
+    } catch (e) {
+      return _response(500, "Error inesperado", []);
+    }
+  }
+
+  Future<RespuestaGenerica> solicitudPut(
+      String recurso, bool token, Map<dynamic, dynamic> mapa) async {
+    Map<String, String> _header = {'Content-Type': 'application/json'};
+    if (token) {
+      Utiles util = Utiles();
+      String? token = await util.getValue('token');
+      _header = {
+        'Content-Type': 'application/json',
+        'token': token.toString(),
+      };
+    }
+
+    final String _url = URL + recurso;
+    final uri = Uri.parse(_url);
+
+    try {
+      final response = await http.put(
+        uri,
+        headers: _header,
+        body: jsonEncode(mapa),
+      );
+
       if (response.statusCode != 200) {
         if (response.statusCode == 404) {
           return _response(404, "Recurso no encontrado", []);

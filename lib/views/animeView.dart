@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:noticias/controls/servicio_back/FacadeService.dart';
 import 'package:noticias/views/comentarioView.dart';
+import 'package:noticias/views/mapComentarioView.dart';
 import 'package:noticias/widgets/drawer.dart';
 
 class AnimeView extends StatefulWidget {
@@ -12,7 +13,7 @@ class AnimeView extends StatefulWidget {
 
 class _AnimeViewState extends State<AnimeView> {
   List<Map<String, dynamic>> animes = [];
-  List<String> nombresDeImagenes = [];
+  // List<String> nombresDeImagenes = [];
 
   @override
   Widget build(BuildContext context) {
@@ -21,7 +22,16 @@ class _AnimeViewState extends State<AnimeView> {
         title: const Text('Lista de Animes'),
       ),
       drawer: AppDrawer(),
-      body: _buildAnimeList(),
+      body: Container(
+        // decoration: const BoxDecoration(
+        //   gradient: LinearGradient(
+        //     begin: Alignment.topLeft,
+        //     end: Alignment.bottomRight,
+        //     colors: [Colors.blue, Colors.purple],
+        //   ),
+        // ),
+        child: _buildAnimeList(),
+      ),
     );
   }
 
@@ -52,72 +62,94 @@ class _AnimeViewState extends State<AnimeView> {
       ),
       child: InkWell(
         onTap: () {},
-        child: Container(
-          padding: const EdgeInsets.all(10),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                anime['titulo'],
-                style: const TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Container(
+              height: 200,
+              decoration: BoxDecoration(
+                image: DecorationImage(
+                  image: NetworkImage(
+                    'http://10.20.137.206:3000/api/images/${anime['archivo']}',
+                  ),
+                  fit: BoxFit.cover,
                 ),
               ),
-              const SizedBox(height: 5),
-              Text('Cuerpo: ${anime['cuerpo']}'),
-              Text('Tipo de Anime: ${anime['tipo_anime']}'),
-              Text('Fecha Estreno: ${anime['fecha']}'),
-              Text(
-                'Estado: ${anime['estado']}',
-                style: TextStyle(
-                  color: anime['estado'] ? Colors.green : Colors.red,
-                ),
-              ),
-              Text(
-                'Autor: ${anime['persona']['nombres']} ${anime['persona']['apellidos']}',
-                style: const TextStyle(
-                  fontStyle: FontStyle.italic,
-                ),
-              ),
-              _buildImages(anime['archivo']), // Pasar el nombre de la imagen
-              const SizedBox(height: 10),
-              ElevatedButton(
-                onPressed: () {
-                  if (anime['id'] != null) {
-                    print('ID del anime seleccionado: ${anime['id']}');
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => ComentarioAnimeView(
-                          animeId: anime['id'].toString(),
-                          animeTitulo: anime['titulo'],
-                          animeCuerpo: anime['cuerpo'],
-                          animeFecha: anime['fecha'],
-                        ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(10),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Center(
+                    child: Text(
+                      anime['titulo'],
+                      style: const TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black,
                       ),
-                    );
-                  } else {
-                    print('La propiedad "id" es nula en este anime.');
-                  }
-                },
-                child: const Text('Comentar'),
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text('Cuerpo: ${anime['cuerpo']}'),
+                  Text('Tipo de Anime: ${anime['tipo_anime']}'),
+                  Text('Fecha Estreno: ${anime['fecha']}'),
+                  Text(
+                    'Estado: ${anime['estado']}',
+                    style: const TextStyle(color: Colors.green),
+                  ),
+                  Text(
+                    'Autor: ${anime['persona']['nombres']} ${anime['persona']['apellidos']}',
+                    style: const TextStyle(
+                      fontStyle: FontStyle.italic,
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  ElevatedButton(
+                    onPressed: () {
+                      if (anime['id'] != null) {
+                        print('ID del anime seleccionado: ${anime['id']}');
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => ComentarioAnimeView(
+                              animeId: anime['id'].toString(),
+                              animeTitulo: anime['titulo'],
+                              animeCuerpo: anime['cuerpo'],
+                              animeFecha: anime['fecha'],
+                            ),
+                          ),
+                        );
+                      } else {
+                        print('La propiedad "id" es nula en este anime.');
+                      }
+                    },
+                    child: const Text('Comentar'),
+                  ),
+                  ElevatedButton(
+                    onPressed: () {
+                      if (anime['id'] != null) {
+                        print('ID del anime seleccionado: ${anime['id']}');
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => MapComentarioView(
+                                animeId: anime['id'].toString()),
+                          ),
+                        );
+                      } else {
+                        print('La propiedad "id" es nula en este anime.');
+                      }
+                    },
+                    child: const Text('Mapa'),
+                  ),
+                ],
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
-    );
-  }
-
-  Widget _buildImages(String nombreDeImagen) {
-    String imageUrl = 'http://192.168.0.105:3000/api/images/$nombreDeImagen';
-
-    return Image.network(
-      imageUrl,
-      height: 100,
-      width: 100,
-      fit: BoxFit.cover,
     );
   }
 
@@ -125,7 +157,7 @@ class _AnimeViewState extends State<AnimeView> {
   void initState() {
     super.initState();
     _listarAnimes();
-    _listarNombresDeImagenes();
+    // _listarNombresDeImagenes();
   }
 
   Future<void> _listarAnimes() async {
@@ -142,19 +174,6 @@ class _AnimeViewState extends State<AnimeView> {
       }
     } catch (e) {
       print('Excepción: $e');
-    }
-  }
-
-  Future<void> _listarNombresDeImagenes() async {
-    try {
-      FacadeService servicio = FacadeService();
-      List<String> nombres = await servicio.obtenerNombresDeImagenes();
-
-      setState(() {
-        nombresDeImagenes = nombres;
-      });
-    } catch (e) {
-      print('Error al obtener nombres de imágenes: $e');
     }
   }
 }

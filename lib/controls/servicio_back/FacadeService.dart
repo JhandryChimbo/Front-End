@@ -90,9 +90,14 @@ class FacadeService {
     return await c.solicitudGet('comentarios', false);
   }
 
-  Future<RespuestaGenerica> obtenerAnime(String idAnime) async {
-    return await c.solicitudGet('animes/get/$idAnime', false);
+  Future<RespuestaGenerica> modificarUsuario(
+      Map<dynamic, dynamic> data, String idPersona) async {
+    return await c.solicitudPost('persona/modificar/$idPersona', false, data);
   }
+
+  // Future<RespuestaGenerica> obtenerAnime(String idAnime) async {
+  //   return await c.solicitudGet('animes/get/$idAnime', false);
+  // }
 
   Future<List<String>> obtenerNombresDeImagenes() async {
     try {
@@ -101,7 +106,6 @@ class FacadeService {
       var datos = respuesta.datos;
 
       if (datos is String) {
-        // Si 'datos' es una cadena, intenta decodificarla como JSON
         try {
           var jsonData = json.decode(datos);
           if (jsonData is List) {
@@ -113,8 +117,6 @@ class FacadeService {
           print('Error al decodificar JSON: $e');
         }
       }
-
-      // Si no es una cadena o no se pudo decodificar, retorna una lista vacía
       return [];
     } catch (error) {
       print('Error al obtener nombres de imágenes: $error');

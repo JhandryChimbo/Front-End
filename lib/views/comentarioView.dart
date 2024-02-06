@@ -22,19 +22,8 @@ class ComentarioAnimeView extends StatefulWidget {
 }
 
 class _ComentarioAnimeViewState extends State<ComentarioAnimeView> {
-  List<Map<String, dynamic>> comentarios = [];
   final _formKey = GlobalKey<FormState>();
   final TextEditingController comentarioController = TextEditingController();
-
-  int comentariosPorPagina = 10;
-  int paginaActual = 1;
-  bool cargandoComentarios = false;
-
-  @override
-  void initState() {
-    super.initState();
-    _listarComentarios();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -48,10 +37,6 @@ class _ComentarioAnimeViewState extends State<ComentarioAnimeView> {
           children: [
             _buildAnimeCard(),
             _buildComentarioForm(),
-            Expanded(
-              child: _buildComentariosList(),
-            ),
-            _buildPaginationButtons(),
           ],
         ),
       ),
@@ -126,87 +111,12 @@ class _ComentarioAnimeViewState extends State<ComentarioAnimeView> {
     );
   }
 
-  Widget _buildComentariosList() {
-    return ListView.builder(
-      itemCount: comentarios.length,
-      itemBuilder: (context, index) {
-        String nombrePersona = comentarios[index]['persona']['nombres'];
-        String apellidosPersona = comentarios[index]['persona']['apellidos'];
-
-        return ListTile(
-          title: Text('$nombrePersona $apellidosPersona dice:'),
-          subtitle: Text(comentarios[index]['cuerpo']),
-        );
-      },
-    );
-  }
-
-  Widget _buildPaginationButtons() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        ElevatedButton(
-          onPressed: paginaActual > 1 ? _retrocederPagina : null,
-          child: const Text('Anterior'),
-        ),
-        const SizedBox(width: 10),
-        ElevatedButton(
-          onPressed: _cargarMasComentarios,
-          child: const Text('Siguiente'),
-        ),
-      ],
-    );
-  }
-
-  void _retrocederPagina() {
-    if (paginaActual > 1) {
-      setState(() {
-        paginaActual--;
-        _listarComentarios();
-      });
-    }
-  }
-
-  Future<void> _cargarMasComentarios() async {
-    if (!cargandoComentarios) {
-      setState(() {
-        cargandoComentarios = true;
-      });
-
-      try {
-        FacadeService servicio = FacadeService();
-        var response = await servicio.listarComentarios(
-          widget.animeId,
-          pagina: paginaActual + 1,
-          cantidad: comentariosPorPagina,
-        );
-
-        if (response.code == 200) {
-          setState(() {
-            comentarios.addAll(List<Map<String, dynamic>>.from(response.datos));
-            paginaActual++;
-          });
-        } else {
-          print('Error: ${response.msg}');
-        }
-      } catch (e) {
-        print('Excepción: $e');
-      } finally {
-        setState(() {
-          cargandoComentarios = false;
-        });
-      }
-    }
-  }
-
   Future<void> _enviarComentario() async {
-    print('ID del anime al enviar el comentario: ${widget.animeId}');
-
     if (_formKey.currentState!.validate()) {
       try {
         // Obtener la ubicación actual
         Position position = await Geolocator.getCurrentPosition(
-          desiredAccuracy: LocationAccuracy.high,
+          desiredAccuracy: LocationAccuracy.medium,
         );
         double latitud = position.latitude;
         double longitud = position.longitude;
@@ -236,8 +146,6 @@ class _ComentarioAnimeViewState extends State<ComentarioAnimeView> {
           if (response.code == 200) {
             const SnackBar msg = SnackBar(content: Text('Comentario enviado'));
             ScaffoldMessenger.of(context).showSnackBar(msg);
-
-            // Limpiar el TextFormField después de enviar el comentario exitosamente
             comentarioController.clear();
           } else {
             const SnackBar msg =
@@ -250,27 +158,6 @@ class _ComentarioAnimeViewState extends State<ComentarioAnimeView> {
       } catch (e) {
         print('Error al obtener la ubicación: $e');
       }
-    }
-  }
-
-  Future<void> _listarComentarios() async {
-    try {
-      FacadeService servicio = FacadeService();
-      var response = await servicio.listarComentarios(
-        widget.animeId,
-        pagina: paginaActual,
-        cantidad: comentariosPorPagina,
-      );
-
-      if (response.code == 200) {
-        setState(() {
-          comentarios = List<Map<String, dynamic>>.from(response.datos);
-        });
-      } else {
-        print('Error: ${response.msg}');
-      }
-    } catch (e) {
-      print('Excepción: $e');
     }
   }
 }

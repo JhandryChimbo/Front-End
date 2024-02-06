@@ -1,5 +1,6 @@
 import 'dart:developer';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:noticias/controls/servicio_back/FacadeService.dart';
 import 'package:noticias/controls/utiles/Utiles.dart';
 import 'package:validators/validators.dart';
@@ -55,98 +56,161 @@ class _SessionViewState extends State<SessionView> {
 
   @override
   Widget build(BuildContext context) {
-    return Form(
-      key: _formKey,
-      child: Scaffold(
-          body: ListView(
-        padding: const EdgeInsets.all(32),
-        children: <Widget>[
+    return Scaffold(
+      body: Stack(
+        children: [
           Container(
-            alignment: Alignment.center,
-            padding: const EdgeInsets.all(10),
-            child: const Text(
-              "Animes",
-              style: TextStyle(
-                  color: Colors.blue,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 30),
-            ),
-          ),
-          Container(
-            alignment: Alignment.center,
-            padding: const EdgeInsets.all(10),
-            child: const Text(
-              "VsCode>>>>AndroidStuido",
-              style: TextStyle(fontSize: 30),
-            ),
-          ),
-          Container(
-            alignment: Alignment.center,
-            padding: const EdgeInsets.all(10),
-            child: const Text(
-              "Inicio de Sesion",
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-            ),
-          ),
-          Container(
-            padding: const EdgeInsets.all(10),
-            child: TextFormField(
-              controller: correoControl,
-              validator: (value) {
-                if (value!.isEmpty) {
-                  return "Debe ingresar una correo";
-                }
-                if (!isEmail(value)) {
-                  return "Debe ingresar una correo valido";
-                }
-                return null;
-              },
-              decoration: const InputDecoration(
-                labelText: "Correo",
-                suffixIcon: Icon(Icons.alternate_email),
+            decoration: const BoxDecoration(
+              
+              image: DecorationImage(
+                image: AssetImage("assets/fondo.png"),
+                fit: BoxFit.contain,
+                
               ),
             ),
           ),
-          Container(
-            padding: const EdgeInsets.all(10),
-            child: TextFormField(
-              obscureText: true,
-              controller: claveControl,
-              validator: (value) {
-                if (value!.isEmpty) {
-                  return "Debe ingresar una clave";
-                }
-                return null;
-              },
-              decoration: const InputDecoration(
-                labelText: "Clave",
-                suffixIcon: Icon(Icons.password),
+          Padding(
+            padding: const EdgeInsets.all(16),
+            child: Center(
+              child: SingleChildScrollView(
+                child: Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10),
+                    color: Colors.black.withOpacity(0.5),
+                  ),
+                  child: Form(
+                    key: _formKey,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: <Widget>[
+                        const Text(
+                          "Noticias",
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 30,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                        const SizedBox(height: 20),
+                        const Text(
+                          "Inicio de Sesión",
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 24,
+                              fontWeight: FontWeight.bold),
+                          textAlign: TextAlign.center,
+                        ),
+                        const SizedBox(height: 20),
+                        TextFormField(
+                          controller: correoControl,
+                          validator: (value) {
+                            if (value!.isEmpty) {
+                              return "Debe ingresar un correo";
+                            }
+                            if (!isEmail(value)) {
+                              return "Debe ingresar un correo válido";
+                            }
+                            return null;
+                          },
+                          decoration: const InputDecoration(
+                            labelText: "Correo",
+                            prefixIcon: Icon(Icons.email),
+                            prefixIconColor: Colors.white,
+                            labelStyle: TextStyle(color: Colors.white),
+                            enabledBorder: UnderlineInputBorder(
+                              borderSide: BorderSide(color: Colors.white),
+                            ),
+                            focusedBorder: UnderlineInputBorder(
+                              borderSide: BorderSide(color: Colors.white),
+                            ),
+                          ),
+                          style: const TextStyle(color: Colors.white),
+                        ),
+                        const SizedBox(height: 20),
+                        TextFormField(
+                          obscureText: true,
+                          controller: claveControl,
+                          validator: (value) {
+                            if (value!.isEmpty) {
+                              return "Debe ingresar una clave";
+                            }
+                            return null;
+                          },
+                          decoration: const InputDecoration(
+                            labelText: "Clave",
+                            prefixIcon: Icon(Icons.lock),
+                            prefixIconColor: Colors.white,
+                            labelStyle: TextStyle(color: Colors.white),
+                            enabledBorder: UnderlineInputBorder(
+                              borderSide: BorderSide(color: Colors.white),
+                            ),
+                            focusedBorder: UnderlineInputBorder(
+                              borderSide: BorderSide(color: Colors.white),
+                            ),
+                          ),
+                          style: const TextStyle(color: Colors.white),
+                        ),
+                        const SizedBox(height: 20),
+                        ElevatedButton(
+                          onPressed: _iniciar,
+                          style: ElevatedButton.styleFrom(
+                            foregroundColor: Colors.white,
+                            backgroundColor: Colors.white.withOpacity(0.5),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 16, vertical: 12),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            side: const BorderSide(color: Colors.white),
+                          ),
+                          child: const Text(
+                            "Iniciar Sesión",
+                            style: TextStyle(
+                                fontSize: 16, fontWeight: FontWeight.bold),
+                          ),
+                        ),
+                        const SizedBox(height: 20),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: <Widget>[
+                            const Text(
+                              "¿No tienes una cuenta?",
+                              style: TextStyle(
+                                color: Colors.white,
+                              ),
+                            ),
+                            TextButton(
+                              onPressed: () {
+                                Navigator.pushNamedAndRemoveUntil(
+                                  context,
+                                  '/register',
+                                  (Route<dynamic> route) => false,
+                                );
+                              },
+                              child: const Text(
+                                "Regístrate",
+                                style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                    decoration: TextDecoration.underline,
+                                    decorationColor: Colors.white),
+                              ),
+                            ),
+                          ],
+                        )
+                      ],
+                    ),
+                  ),
+                ),
               ),
             ),
-          ),
-          Container(
-            height: 50,
-            padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
-            child: ElevatedButton(
-              onPressed: _iniciar,
-              child: const Text("Inicio"),
-            ),
-          ),
-          Row(
-            children: <Widget>[
-              const Text("No tienes una cuenta"),
-              TextButton(
-                  onPressed: () {
-                    Navigator.pushNamed(context, '/register');
-                  },
-                  child: const Text(
-                    "Registrate",
-                    style: TextStyle(fontSize: 20),
-                  ))
-            ],
           )
         ],
-      )),
+      ),
     );
   }
 }

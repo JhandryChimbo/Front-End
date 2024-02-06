@@ -13,50 +13,95 @@ class AppDrawer extends StatelessWidget {
         future: _getUser(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            // Display loading indicator while waiting for user data
-            return const CircularProgressIndicator();
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
           } else if (snapshot.hasError) {
-            // Handle error case
-            return Text('Error: ${snapshot.error}');
+            return Center(
+              child: Text('Error: ${snapshot.error}'),
+            );
           } else {
-            // User data retrieved successfully
             String? user = snapshot.data;
             return ListView(
               padding: EdgeInsets.zero,
               children: <Widget>[
                 UserAccountsDrawerHeader(
-                  accountName: Text(user ?? 'No User'),
+                  accountName: Text(
+                    user ?? 'No User',
+                    style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 18),
+                  ),
                   accountEmail: null,
                   currentAccountPicture: GestureDetector(
                     onTap: () {},
-                    child: const CircleAvatar(
-                      child: Icon(
-                        Icons.account_circle,
-                        size: 56.0,
+                    child: CircleAvatar(
+                      radius: 28,
+                      backgroundColor: Colors.white,
+                      child: Image.asset(
+                        'assets/fondo.png',
+                        fit: BoxFit.cover,
                       ),
                     ),
                   ),
                   decoration: const BoxDecoration(
                     color: Colors.orangeAccent,
+                    image: DecorationImage(
+                      image: AssetImage(
+                          'assets/fondo1.png'),
+                      fit: BoxFit.cover,
+                    ),
                   ),
                 ),
                 ListTile(
-                  leading: const Icon(Icons.person),
-                  title: const Text('Perfil'),
+                  leading: const Icon(
+                    Icons.person,
+                    color: Colors.blue,
+                  ),
+                  title: const Text(
+                    'Perfil',
+                    style: TextStyle(fontSize: 16),
+                  ),
                   onTap: () {
                     Navigator.pushReplacementNamed(context, '/home');
                   },
                 ),
                 ListTile(
-                  leading: const Icon(Icons.map_rounded),
-                  title: const Text('Mapa'),
+                  leading: const Icon(
+                    Icons.list,
+                    color: Colors.blue,
+                  ),
+                  title: const Text(
+                    'Lista',
+                    style: TextStyle(fontSize: 16),
+                  ),
                   onTap: () {
-                    Navigator.pushReplacementNamed(context, '/mapa');
+                    Navigator.pushReplacementNamed(context, '/animes');
                   },
                 ),
                 ListTile(
-                  leading: const Icon(Icons.exit_to_app),
-                  title: const Text('Cerrar Sesión'),
+                  leading: const Icon(
+                    Icons.map_rounded,
+                    color: Colors.green,
+                  ),
+                  title: const Text(
+                    'Mapa',
+                    style: TextStyle(fontSize: 16),
+                  ),
+                  onTap: () {
+                    Navigator.pushReplacementNamed(context, '/map');
+                  },
+                ),
+                ListTile(
+                  leading: const Icon(
+                    Icons.exit_to_app,
+                    color: Colors.red,
+                  ),
+                  title: const Text(
+                    'Cerrar Sesión',
+                    style: TextStyle(fontSize: 16),
+                  ),
                   onTap: () {
                     _mostrarDialogoConfirmacion(context);
                   },

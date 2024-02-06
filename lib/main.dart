@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:noticias/views/animeView.dart';
 import 'package:noticias/views/exception/Page404.dart';
-import 'package:noticias/views/mapaView.dart';
+import 'package:noticias/views/mapView.dart';
 import 'package:noticias/views/registerView.dart';
 import 'package:noticias/views/sessionView.dart';
 import 'package:noticias/views/comentarioView.dart';
+import 'package:noticias/views/mapComentarioView.dart';
 
 void main() {
   runApp(const MyApp());
@@ -47,13 +48,16 @@ class MyApp extends StatelessWidget {
         '/home': (context) => const SessionView(),
         '/register': (context) => const RegisterView(),
         '/animes': (context) => const AnimeView(),
-        '/mapa': (context) => const MapaView(),
+        '/map': (context) => const MapView(),
+        '/mapComment': (context) => const MapComentarioView(animeId: '',),
+        '/profile': (context) => const MapView(),
         '/comentario': (context) => const ComentarioAnimeView(
               animeId: '',
               animeTitulo: '',
               animeCuerpo: '',
               animeFecha: '',
             ),
+
       },
       onGenerateRoute: (settings) {
         return MaterialPageRoute(builder: (context) => const Page404());
