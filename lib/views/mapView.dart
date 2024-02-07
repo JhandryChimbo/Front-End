@@ -116,7 +116,7 @@ class _MapViewState extends State<MapView> {
   Future<void> _listarComentarios() async {
     try {
       FacadeService servicio = FacadeService();
-      var response = await servicio.listarComentariosMapa();
+      var response = await servicio.listarComentarios();
 
       if (response.code == 200) {
         setState(() {

@@ -23,20 +23,30 @@ class ComentarioAnimeView extends StatefulWidget {
 
 class _ComentarioAnimeViewState extends State<ComentarioAnimeView> {
   final _formKey = GlobalKey<FormState>();
+  List<Map<String, dynamic>> comentariosAnime = [];
+  
+
   final TextEditingController comentarioController = TextEditingController();
 
   @override
+  void initState() {
+    super.initState();
+    _listarComentarios(); // Load comments when the screen initializes
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return Form(
-      key: _formKey,
-      child: Scaffold(
-        appBar: AppBar(
-          title: Text('Comentarios de ${widget.animeTitulo}'),
-        ),
-        body: Column(
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Comentarios de ${widget.animeTitulo}'),
+      ),
+      body: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             _buildAnimeCard(),
             _buildComentarioForm(),
+            _buildComentariosList(),
           ],
         ),
       ),
@@ -85,19 +95,22 @@ class _ComentarioAnimeViewState extends State<ComentarioAnimeView> {
             ),
           ),
           const SizedBox(height: 10),
-          TextFormField(
-            controller: comentarioController,
-            validator: (value) {
-              if (value!.isEmpty) {
-                return 'Debe ingresar un comentario';
-              }
-              return null;
-            },
-            decoration: const InputDecoration(
-              labelText: 'Comentario',
-              border: OutlineInputBorder(),
+          Form(
+            key: _formKey,
+            child: TextFormField(
+              controller: comentarioController,
+              validator: (value) {
+                if (value!.isEmpty) {
+                  return 'Debe ingresar un comentario';
+                }
+                return null;
+              },
+              decoration: const InputDecoration(
+                labelText: 'Comentario',
+                border: OutlineInputBorder(),
+              ),
+              maxLines: 3,
             ),
-            maxLines: 3,
           ),
           const SizedBox(height: 10),
           ElevatedButton(
@@ -111,10 +124,59 @@ class _ComentarioAnimeViewState extends State<ComentarioAnimeView> {
     );
   }
 
+  Widget _buildComentariosList() {
+    return Column(
+      children: [
+        const SizedBox(height: 10),
+        const Text(
+          'Comentarios del anime',
+          style: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        const SizedBox(height: 10),
+        if (comentariosAnime.isNotEmpty)
+          Column(
+            children: comentariosAnime.reversed.map((comentario) {
+              // Invertir la lista
+              return Card(
+                elevation: 3,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10.0),
+                ),
+                child: Container(
+                  padding: const EdgeInsets.all(10),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        comentario['persona']['nombres'] +
+                            ' ' +
+                            comentario['persona']['apellidos'],
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 5),
+                      Text('Fecha: ${comentario['fecha']}'),
+                      Text('Cuerpo: ${comentario['cuerpo']}'),
+                    ],
+                  ),
+                ),
+              );
+            }).toList(),
+          )
+        else
+          const Text('No hay comentarios para este anime.'),
+      ],
+    );
+  }
+
   Future<void> _enviarComentario() async {
     if (_formKey.currentState!.validate()) {
       try {
-        // Obtener la ubicación actual
         Position position = await Geolocator.getCurrentPosition(
           desiredAccuracy: LocationAccuracy.medium,
         );
@@ -147,6 +209,7 @@ class _ComentarioAnimeViewState extends State<ComentarioAnimeView> {
             const SnackBar msg = SnackBar(content: Text('Comentario enviado'));
             ScaffoldMessenger.of(context).showSnackBar(msg);
             comentarioController.clear();
+            _listarComentarios();
           } else {
             const SnackBar msg =
                 SnackBar(content: Text('Error al enviar comentario'));
@@ -158,6 +221,29 @@ class _ComentarioAnimeViewState extends State<ComentarioAnimeView> {
       } catch (e) {
         print('Error al obtener la ubicación: $e');
       }
+    }
+  }
+
+  Future<void> _listarComentarios() async {
+    try {
+      FacadeService servicio = FacadeService();
+      var response = await servicio.listarComentarios();
+
+      if (response.code == 200) {
+        List<Map<String, dynamic>> comentarios =
+            List<Map<String, dynamic>>.from(response.datos);
+
+        setState(() {
+          comentariosAnime = comentarios
+              .where(
+                  (comentario) => comentario['anime']['id'] == widget.animeId)
+              .toList();
+        });
+      } else {
+        print('Error: ${response.msg}');
+      }
+    } catch (e) {
+      print('Excepción: $e');
     }
   }
 }

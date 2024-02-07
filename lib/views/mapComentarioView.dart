@@ -59,7 +59,6 @@ class _MapComentarioViewState extends State<MapComentarioView> {
   }
 
   Widget _buildMapa() {
-
     List<Map<String, dynamic>> comentariosDelAnime = comentarios
         .where((comentario) => comentario['anime']['id'] == widget.animeId)
         .toList();
@@ -123,7 +122,7 @@ class _MapComentarioViewState extends State<MapComentarioView> {
   Future<void> _listarComentarios() async {
     try {
       FacadeService servicio = FacadeService();
-      var response = await servicio.listarComentariosMapa();
+      var response = await servicio.listarComentarios();
 
       if (response.code == 200) {
         setState(() {

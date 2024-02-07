@@ -81,12 +81,11 @@ class FacadeService {
     return await c.solicitudGet('animes', false);
   }
 
-  Future<RespuestaGenerica> listarComentarios(String animeId,
-      {required int pagina, required int cantidad}) async {
-    return await c.solicitudGet('comentarios', false);
-  }
+  // Future<RespuestaGenerica> listarComentarios() async {
+  //   return await c.solicitudGet('comentarios', false);
+  // }
 
-  Future<RespuestaGenerica> listarComentariosMapa() async {
+  Future<RespuestaGenerica> listarComentarios() async {
     return await c.solicitudGet('comentarios', false);
   }
 
@@ -100,9 +99,14 @@ class FacadeService {
         'personas/modificar/usuario/$idPersona', false, data);
   }
 
+  Future<RespuestaGenerica> modificarComentario(
+      Map<dynamic, dynamic> data, String idComentario) async {
+    return await c.solicitudPut(
+        'personas/modificar/usuario/$idComentario', false, data);
+  }
+
   Future<RespuestaGenerica> banearUsuario(String idPersona) async {
-    return await c.solicitudPutVoid(
-        'admin/personas/banear/$idPersona', false);
+    return await c.solicitudPutVoid('admin/personas/banear/$idPersona', false);
   }
 
   Future<RespuestaGenerica> obtenerUsuario(String idPersona) async {
