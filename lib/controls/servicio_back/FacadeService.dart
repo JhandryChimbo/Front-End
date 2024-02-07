@@ -90,9 +90,23 @@ class FacadeService {
     return await c.solicitudGet('comentarios', false);
   }
 
+  Future<RespuestaGenerica> listarUsuarios() async {
+    return await c.solicitudGet('admin/personas', false);
+  }
+
   Future<RespuestaGenerica> modificarUsuario(
       Map<dynamic, dynamic> data, String idPersona) async {
-    return await c.solicitudPost('persona/modificar/$idPersona', false, data);
+    return await c.solicitudPut(
+        'personas/modificar/usuario/$idPersona', false, data);
+  }
+
+  Future<RespuestaGenerica> banearUsuario(String idPersona) async {
+    return await c.solicitudPutVoid(
+        'admin/personas/banear/$idPersona', false);
+  }
+
+  Future<RespuestaGenerica> obtenerUsuario(String idPersona) async {
+    return await c.solicitudGet('admin/personas/get/$idPersona', false);
   }
 
   // Future<RespuestaGenerica> obtenerAnime(String idAnime) async {

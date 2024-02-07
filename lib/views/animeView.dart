@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:noticias/controls/servicio_back/FacadeService.dart';
+import 'package:noticias/controls/utiles/Utiles.dart';
 import 'package:noticias/views/comentarioView.dart';
 import 'package:noticias/views/mapComentarioView.dart';
 import 'package:noticias/widgets/drawer.dart';
 
 class AnimeView extends StatefulWidget {
-  const AnimeView({Key? key}) : super(key: key);
+  const AnimeView({super.key});
 
   @override
   _AnimeViewState createState() => _AnimeViewState();
@@ -13,7 +14,7 @@ class AnimeView extends StatefulWidget {
 
 class _AnimeViewState extends State<AnimeView> {
   List<Map<String, dynamic>> animes = [];
-  // List<String> nombresDeImagenes = [];
+  Map<String, dynamic> usuario = {};
 
   @override
   Widget build(BuildContext context) {
@@ -23,13 +24,6 @@ class _AnimeViewState extends State<AnimeView> {
       ),
       drawer: AppDrawer(),
       body: Container(
-        // decoration: const BoxDecoration(
-        //   gradient: LinearGradient(
-        //     begin: Alignment.topLeft,
-        //     end: Alignment.bottomRight,
-        //     colors: [Colors.blue, Colors.purple],
-        //   ),
-        // ),
         child: _buildAnimeList(),
       ),
     );
@@ -54,6 +48,10 @@ class _AnimeViewState extends State<AnimeView> {
   }
 
   Widget _buildAnimeCard(Map<String, dynamic> anime) {
+    bool esAdmin = usuario.containsKey('rol') &&
+        usuario['rol'] != null &&
+        usuario['rol']['nombre'] == 'admin';
+
     return Card(
       elevation: 5,
       shadowColor: Colors.grey,
@@ -70,7 +68,7 @@ class _AnimeViewState extends State<AnimeView> {
               decoration: BoxDecoration(
                 image: DecorationImage(
                   image: NetworkImage(
-                    'http://10.20.137.206:3000/api/images/${anime['archivo']}',
+                    'http://192.168.0.105:3000/api/images/${anime['archivo']}',
                   ),
                   fit: BoxFit.cover,
                 ),
@@ -92,13 +90,13 @@ class _AnimeViewState extends State<AnimeView> {
                     ),
                   ),
                   const SizedBox(height: 8),
-                  Text('Cuerpo: ${anime['cuerpo']}'),
+                  Text('${anime['cuerpo']}'),
                   Text('Tipo de Anime: ${anime['tipo_anime']}'),
                   Text('Fecha Estreno: ${anime['fecha']}'),
-                  Text(
-                    'Estado: ${anime['estado']}',
-                    style: const TextStyle(color: Colors.green),
-                  ),
+                  // Text(
+                  //   'Estado: ${anime['estado']}',
+                  //   style: const TextStyle(color: Colors.green),
+                  // ),
                   Text(
                     'Autor: ${anime['persona']['nombres']} ${anime['persona']['apellidos']}',
                     style: const TextStyle(
@@ -106,43 +104,51 @@ class _AnimeViewState extends State<AnimeView> {
                     ),
                   ),
                   const SizedBox(height: 10),
-                  ElevatedButton(
-                    onPressed: () {
-                      if (anime['id'] != null) {
-                        print('ID del anime seleccionado: ${anime['id']}');
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => ComentarioAnimeView(
-                              animeId: anime['id'].toString(),
-                              animeTitulo: anime['titulo'],
-                              animeCuerpo: anime['cuerpo'],
-                              animeFecha: anime['fecha'],
-                            ),
-                          ),
-                        );
-                      } else {
-                        print('La propiedad "id" es nula en este anime.');
-                      }
-                    },
-                    child: const Text('Comentar'),
-                  ),
-                  ElevatedButton(
-                    onPressed: () {
-                      if (anime['id'] != null) {
-                        print('ID del anime seleccionado: ${anime['id']}');
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => MapComentarioView(
-                                animeId: anime['id'].toString()),
-                          ),
-                        );
-                      } else {
-                        print('La propiedad "id" es nula en este anime.');
-                      }
-                    },
-                    child: const Text('Mapa'),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      ElevatedButton(
+                        onPressed: () {
+                          if (anime['id'] != null) {
+                            print('ID del anime seleccionado: ${anime['id']}');
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => ComentarioAnimeView(
+                                  animeId: anime['id'].toString(),
+                                  animeTitulo: anime['titulo'],
+                                  animeCuerpo: anime['cuerpo'],
+                                  animeFecha: anime['fecha'],
+                                ),
+                              ),
+                            );
+                          } else {
+                            print('La propiedad "id" es nula en este anime.');
+                          }
+                        },
+                        child: const Text('Comentar'),
+                      ),
+                      if (esAdmin)
+                        ElevatedButton(
+                          onPressed: () {
+                            if (anime['id'] != null) {
+                              print(
+                                  'ID del anime seleccionado: ${anime['id']}');
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => MapComentarioView(
+                                    animeId: anime['id'].toString(),
+                                  ),
+                                ),
+                              );
+                            } else {
+                              print('La propiedad "id" es nula en este anime.');
+                            }
+                          },
+                          child: const Text('Mapa'),
+                        ),
+                    ],
                   ),
                 ],
               ),
@@ -157,7 +163,29 @@ class _AnimeViewState extends State<AnimeView> {
   void initState() {
     super.initState();
     _listarAnimes();
-    // _listarNombresDeImagenes();
+    _obtenerUsuario();
+  }
+
+  Future<void> _obtenerUsuario() async {
+    try {
+      Utiles util = Utiles();
+      String? idPersonaLogeada = await util.getValue('id');
+      if (idPersonaLogeada != null) {
+        FacadeService servicio = FacadeService();
+        var response = await servicio.obtenerUsuario(idPersonaLogeada);
+        if (response.code == 200) {
+          setState(() {
+            usuario = Map<String, dynamic>.from(response.datos);
+          });
+        } else {
+          print('Error: ${response.msg}');
+        }
+      } else {
+        print('Error: ID de persona logeada es nulo');
+      }
+    } catch (e) {
+      print('Excepción: $e');
+    }
   }
 
   Future<void> _listarAnimes() async {

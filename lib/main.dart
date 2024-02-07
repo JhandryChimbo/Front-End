@@ -6,6 +6,8 @@ import 'package:noticias/views/registerView.dart';
 import 'package:noticias/views/sessionView.dart';
 import 'package:noticias/views/comentarioView.dart';
 import 'package:noticias/views/mapComentarioView.dart';
+import 'package:noticias/views/userListView.dart';
+import 'package:noticias/views/userProfileView.dart';
 
 void main() {
   runApp(const MyApp());
@@ -48,16 +50,18 @@ class MyApp extends StatelessWidget {
         '/home': (context) => const SessionView(),
         '/register': (context) => const RegisterView(),
         '/animes': (context) => const AnimeView(),
+        '/usuarios': (context) => const UserListView(),
         '/map': (context) => const MapView(),
-        '/mapComment': (context) => const MapComentarioView(animeId: '',),
-        '/profile': (context) => const MapView(),
+        '/mapComment': (context) => const MapComentarioView(
+              animeId: '',
+            ),
+        '/profile': (context) => const UserProfileView(),
         '/comentario': (context) => const ComentarioAnimeView(
               animeId: '',
               animeTitulo: '',
               animeCuerpo: '',
               animeFecha: '',
             ),
-
       },
       onGenerateRoute: (settings) {
         return MaterialPageRoute(builder: (context) => const Page404());
