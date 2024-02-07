@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:noticias/controls/servicio_back/FacadeService.dart';
 import 'package:geolocator/geolocator.dart';
@@ -24,14 +26,66 @@ class ComentarioAnimeView extends StatefulWidget {
 class _ComentarioAnimeViewState extends State<ComentarioAnimeView> {
   final _formKey = GlobalKey<FormState>();
   List<Map<String, dynamic>> comentariosAnime = [];
-  
+  String? _editingCommentId;
 
   final TextEditingController comentarioController = TextEditingController();
+
+  Future<String?> _modificarComentario(
+      String idComentario, TextEditingController editado) async {
+    if (editado.text.isEmpty) {
+      // Mostrar mensaje de error si el comentario editado está vacío
+      const SnackBar msg =
+          SnackBar(content: Text('El comentario no puede estar vacío'));
+      ScaffoldMessenger.of(context).showSnackBar(msg);
+      return null;
+    }
+
+    Position position = await Geolocator.getCurrentPosition(
+      desiredAccuracy: LocationAccuracy.medium,
+    );
+    double latitud = position.latitude;
+    double longitud = position.longitude;
+
+    // Fecha
+    DateTime now = DateTime.now();
+    String fecha = now.toIso8601String();
+
+    setState(() {
+      FacadeService servicio = FacadeService();
+      Map<String, String> mapa = {
+        "cuerpo": editado.text,
+        "fecha": fecha,
+        "longitud": longitud.toString(),
+        "latitud": latitud.toString(),
+      };
+      log(mapa.toString());
+
+      servicio.modificarComentario(mapa, idComentario).then((value) async {
+        try {
+          if (value.code == 200) {
+            const SnackBar msg =
+                SnackBar(content: Text("Comentario modificado correctamente"));
+            ScaffoldMessenger.of(context).showSnackBar(msg);
+            _listarComentarios();
+          } else {
+            final SnackBar msg = SnackBar(content: Text("Error ${value.msg}"));
+            ScaffoldMessenger.of(context).showSnackBar(msg);
+          }
+        } catch (error) {
+          print("Error durante la modificacion de la cuenta: $error");
+        }
+      }).catchError((error) {
+        print(
+            "Error durante la modificacion de la cuenta (catchError): $error");
+      });
+    });
+    return null;
+  }
 
   @override
   void initState() {
     super.initState();
-    _listarComentarios(); // Load comments when the screen initializes
+    _listarComentarios();
   }
 
   @override
@@ -125,6 +179,8 @@ class _ComentarioAnimeViewState extends State<ComentarioAnimeView> {
   }
 
   Widget _buildComentariosList() {
+    Utiles util = Utiles();
+    Future<String?> idPersonaLogeadaFuture = util.getValue('id');
     return Column(
       children: [
         const SizedBox(height: 10),
@@ -137,40 +193,108 @@ class _ComentarioAnimeViewState extends State<ComentarioAnimeView> {
         ),
         const SizedBox(height: 10),
         if (comentariosAnime.isNotEmpty)
-          Column(
-            children: comentariosAnime.reversed.map((comentario) {
-              // Invertir la lista
-              return Card(
-                elevation: 3,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10.0),
-                ),
-                child: Container(
-                  padding: const EdgeInsets.all(10),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        comentario['persona']['nombres'] +
-                            ' ' +
-                            comentario['persona']['apellidos'],
-                        style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                        ),
+          FutureBuilder<String?>(
+            future: idPersonaLogeadaFuture,
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const CircularProgressIndicator();
+              }
+
+              if (snapshot.hasError || snapshot.data == null) {
+                return const Text('Error al obtener la id del usuario logeado');
+              }
+
+              String idPersonaLogeada = snapshot.data!;
+              return Column(
+                children: comentariosAnime.reversed.map((comentario) {
+                  bool isOwner =
+                      comentario['persona']['id'] == idPersonaLogeada;
+
+                  return Card(
+                    elevation: 3,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10.0),
+                    ),
+                    child: Container(
+                      padding: const EdgeInsets.all(10),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            comentario['persona']['nombres'] +
+                                ' ' +
+                                comentario['persona']['apellidos'],
+                            style: const TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          const SizedBox(height: 5),
+                          Text('Fecha: ${comentario['fecha']}'),
+                          if (_editingCommentId != comentario['id'])
+                            Text('Cuerpo: ${comentario['cuerpo']}'),
+                          if (_editingCommentId == comentario['id'])
+                            _buildEditCommentForm(comentario['id']),
+                          if (isOwner && _editingCommentId == null)
+                            ElevatedButton(
+                              onPressed: () {
+                                print('ID: ${comentario['id']}');
+                                setState(() {
+                                  _editingCommentId = comentario['id'];
+                                });
+                              },
+                              child: const Text('Editar'),
+                            ),
+                        ],
                       ),
-                      const SizedBox(height: 5),
-                      Text('Fecha: ${comentario['fecha']}'),
-                      Text('Cuerpo: ${comentario['cuerpo']}'),
-                    ],
-                  ),
-                ),
+                    ),
+                  );
+                }).toList(),
               );
-            }).toList(),
+            },
           )
         else
           const Text('No hay comentarios para este anime.'),
       ],
+    );
+  }
+
+  Widget _buildEditCommentForm(String commentId) {
+    final TextEditingController editadoController = TextEditingController(
+        text: comentariosAnime.firstWhere(
+            (comentario) => comentario['id'] == commentId)['cuerpo']);
+
+    return Form(
+      child: Column(
+        children: [
+          TextFormField(
+            controller: editadoController,
+            validator: (value) {
+              if (value!.isEmpty) {
+                return 'Debe ingresar un comentario';
+              }
+              return null;
+            },
+            decoration: const InputDecoration(
+              labelText: 'Comentario',
+              border: OutlineInputBorder(),
+            ),
+            maxLines: 3,
+          ),
+          const SizedBox(height: 10),
+          ElevatedButton(
+            onPressed: () {
+              print(editadoController.text);
+              _modificarComentario(commentId, editadoController);
+              _listarComentarios();
+              setState(() {
+                _editingCommentId = null;
+              });
+            },
+            child: const Text('Guardar'),
+          ),
+        ],
+      ),
     );
   }
 

@@ -102,7 +102,7 @@ class FacadeService {
   Future<RespuestaGenerica> modificarComentario(
       Map<dynamic, dynamic> data, String idComentario) async {
     return await c.solicitudPut(
-        'personas/modificar/usuario/$idComentario', false, data);
+        'comentarios/modificar/$idComentario', false, data);
   }
 
   Future<RespuestaGenerica> banearUsuario(String idPersona) async {
