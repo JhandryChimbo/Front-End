@@ -8,6 +8,7 @@ import 'package:http/http.dart' as http;
 
 class FacadeService {
   Conexion c = Conexion();
+  // Inicio de sesion
   Future<InicioSesionSW> inicioSesion(Map<String, String> mapa) async {
     Map<String, String> header = {'Content-Type': 'application/json'};
     final String url = '${c.URL}login';
@@ -45,6 +46,7 @@ class FacadeService {
     return isw;
   }
 
+  // Registro de usuario
   Future<CrearUsuarioSW> crearCuentaUsuario(Map<String, String> mapa) async {
     Map<String, String> header = {'Content-Type': 'application/json'};
     final String url = '${c.URL}admin/persona/usuario/save';
@@ -71,51 +73,45 @@ class FacadeService {
     return isw;
   }
 
-  Future<RespuestaGenerica> enviarComentario(
-    Map<String, dynamic> mapa,
-  ) async {
-    return await c.solicitudPost('comentarios/save', false, mapa);
-  }
-
+  // Listar animes
   Future<RespuestaGenerica> listarAnimes() async {
-    return await c.solicitudGet('animes', false);
+    return await c.solicitudGet('animes', true);
   }
 
-  // Future<RespuestaGenerica> listarComentarios() async {
-  //   return await c.solicitudGet('comentarios', false);
-  // }
-
+  // Listar comentarios
   Future<RespuestaGenerica> listarComentarios() async {
-    return await c.solicitudGet('comentarios', false);
+    return await c.solicitudGet('comentarios', true);
   }
 
+  // Listar usuarios
   Future<RespuestaGenerica> listarUsuarios() async {
-    return await c.solicitudGet('admin/personas', false);
+    return await c.solicitudGet('admin/personas', true);
   }
 
+  // Modificar Usuario
   Future<RespuestaGenerica> modificarUsuario(
       Map<dynamic, dynamic> data, String idPersona) async {
     return await c.solicitudPut(
-        'personas/modificar/usuario/$idPersona', false, data);
+        'personas/modificar/usuario/$idPersona', true, data);
   }
 
+  // Modificar Comentario
   Future<RespuestaGenerica> modificarComentario(
       Map<dynamic, dynamic> data, String idComentario) async {
     return await c.solicitudPut(
-        'comentarios/modificar/$idComentario', false, data);
+        'comentarios/modificar/$idComentario', true, data);
   }
 
-  Future<RespuestaGenerica> banearUsuario(String idPersona) async {
-    return await c.solicitudPutVoid('admin/personas/banear/$idPersona', false);
+  // Banear/Desbanear Usuario
+  Future<RespuestaGenerica> modificarEstadoUsuario(
+      String idPersona, Map<dynamic, dynamic> data) async {
+    return await c.solicitudPut('admin/personas/banear/$idPersona', true, data);
   }
 
+  // Obtener Usuario
   Future<RespuestaGenerica> obtenerUsuario(String idPersona) async {
-    return await c.solicitudGet('admin/personas/get/$idPersona', false);
+    return await c.solicitudGet('admin/personas/get/$idPersona', true);
   }
-
-  // Future<RespuestaGenerica> obtenerAnime(String idAnime) async {
-  //   return await c.solicitudGet('animes/get/$idAnime', false);
-  // }
 
   Future<List<String>> obtenerNombresDeImagenes() async {
     try {
@@ -142,8 +138,10 @@ class FacadeService {
     }
   }
 
-  Future<RespuestaGenerica> guardarComentario(
-      Map<dynamic, dynamic> data) async {
-    return await c.solicitudPost('comentarios/save', false, data);
+  // Guardar comentario
+  Future<RespuestaGenerica> enviarComentario(
+    Map<String, dynamic> mapa,
+  ) async {
+    return await c.solicitudPost('comentarios/save', true, mapa);
   }
 }

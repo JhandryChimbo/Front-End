@@ -33,7 +33,6 @@ class _ComentarioAnimeViewState extends State<ComentarioAnimeView> {
   Future<String?> _modificarComentario(
       String idComentario, TextEditingController editado) async {
     if (editado.text.isEmpty) {
-      // Mostrar mensaje de error si el comentario editado está vacío
       const SnackBar msg =
           SnackBar(content: Text('El comentario no puede estar vacío'));
       ScaffoldMessenger.of(context).showSnackBar(msg);

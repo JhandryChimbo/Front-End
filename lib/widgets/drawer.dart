@@ -39,21 +39,10 @@ class AppDrawer extends StatelessWidget {
                         fontSize: 18),
                   ),
                   accountEmail: null,
-                  currentAccountPicture: GestureDetector(
-                    onTap: () {},
-                    child: CircleAvatar(
-                      radius: 28,
-                      backgroundColor: Colors.white,
-                      child: Image.asset(
-                        'assets/fondo.png',
-                        fit: BoxFit.cover,
-                      ),
-                    ),
-                  ),
                   decoration: const BoxDecoration(
                     color: Colors.orangeAccent,
                     image: DecorationImage(
-                      image: AssetImage('assets/fondo1.png'),
+                      image: AssetImage('assets/fondo.png'),
                       fit: BoxFit.cover,
                     ),
                   ),

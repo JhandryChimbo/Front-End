@@ -61,11 +61,9 @@ class _SessionViewState extends State<SessionView> {
         children: [
           Container(
             decoration: const BoxDecoration(
-              
               image: DecorationImage(
-                image: AssetImage("assets/fondo.png"),
-                fit: BoxFit.contain,
-                
+                image: AssetImage("assets/fondoInicio.jpeg"),
+                fit: BoxFit.cover,
               ),
             ),
           ),
@@ -77,7 +75,15 @@ class _SessionViewState extends State<SessionView> {
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(10),
-                    color: Colors.black.withOpacity(0.5),
+                    gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [
+                        const Color.fromARGB(255, 24, 79, 135).withOpacity(0.5),
+                        Colors.white.withOpacity(0.5),
+                        
+                      ],
+                    ),
                   ),
                   child: Form(
                     key: _formKey,

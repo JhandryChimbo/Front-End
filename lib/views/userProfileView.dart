@@ -103,7 +103,7 @@ class _UserProfileViewState extends State<UserProfileView> {
               labelText: 'Nombres',
               hintText:
                   nombresControl.text == 'NONE' ? 'Ingrese su nombre' : null,
-              prefixIcon: Icon(Icons.person), // Icono de persona
+              prefixIcon: const Icon(Icons.person),
             ),
             validator: (value) {
               if (value == null || value.isEmpty || value == 'NONE') {
@@ -119,7 +119,7 @@ class _UserProfileViewState extends State<UserProfileView> {
               hintText: apellidosControl.text == 'NONE'
                   ? 'Ingrese sus apellidos'
                   : null,
-              prefixIcon: Icon(Icons.person), // Icono de persona
+              prefixIcon: const Icon(Icons.person),
             ),
             validator: (value) {
               if (value == null || value.isEmpty || value == 'NONE') {
@@ -135,7 +135,7 @@ class _UserProfileViewState extends State<UserProfileView> {
               hintText: direccionControl.text == 'NONE'
                   ? 'Ingrese su dirección'
                   : null,
-              prefixIcon: Icon(Icons.location_on), // Icono de ubicación
+              prefixIcon: const Icon(Icons.location_on),
             ),
             validator: (value) {
               if (value == null || value.isEmpty || value == 'NONE') {
@@ -151,7 +151,7 @@ class _UserProfileViewState extends State<UserProfileView> {
               hintText: celularControl.text == 'NONE'
                   ? 'Ingrese su número de celular'
                   : null,
-              prefixIcon: Icon(Icons.phone), // Icono de teléfono
+              prefixIcon: const Icon(Icons.phone),
             ),
             validator: (value) {
               if (value == null || value.isEmpty || value == 'NONE') {
@@ -167,7 +167,7 @@ class _UserProfileViewState extends State<UserProfileView> {
               hintText: fechaControl.text == 'NONE'
                   ? 'Ingrese su fecha de nacimiento'
                   : null,
-              prefixIcon: Icon(Icons.date_range), // Icono de calendario
+              prefixIcon: const Icon(Icons.date_range),
             ),
             validator: (value) {
               if (value == null || value.isEmpty || value == 'NONE') {
@@ -178,9 +178,9 @@ class _UserProfileViewState extends State<UserProfileView> {
           ),
           TextFormField(
             initialValue: '${user['cuenta']['correo']}',
-            decoration: InputDecoration(
+            decoration: const InputDecoration(
               labelText: 'Correo',
-              prefixIcon: Icon(Icons.email), // Icono de correo electrónico
+              prefixIcon: Icon(Icons.email),
             ),
           ),
           const SizedBox(height: 20),

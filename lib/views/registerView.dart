@@ -82,15 +82,6 @@ class _RegisterViewState extends State<RegisterView> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: <Widget>[
-                        // const Text(
-                        //   "Noticias",
-                        //   style: TextStyle(
-                        //     color: Colors.black,
-                        //     fontWeight: FontWeight.bold,
-                        //     fontSize: 30,
-                        //   ),
-                        //   textAlign: TextAlign.center,
-                        // ),
                         const SizedBox(height: 20),
                         const Text(
                           "Registro de Usuarios",

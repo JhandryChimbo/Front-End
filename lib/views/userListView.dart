@@ -1,4 +1,4 @@
-// import 'dart:developer';
+import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:noticias/controls/servicio_back/FacadeService.dart';
@@ -14,25 +14,36 @@ class UserListView extends StatefulWidget {
 class _UserListViewState extends State<UserListView> {
   List<Map<String, dynamic>> usuarios = [];
 
-  void _banearUsuario(String usuarioId) {
+  void _cambiarEstadoUsuario(String usuarioId, bool nuevoEstado) {
     FacadeService servicio = FacadeService();
-    servicio.banearUsuario(usuarioId).then((value) async {
+
+    Map<String, String> mapa = {
+      "estado": nuevoEstado.toString(),
+    };
+    log(mapa.toString());
+
+    servicio.modificarEstadoUsuario(usuarioId, mapa).then((value) async {
       try {
         if (value.code == 200) {
-          const SnackBar msg =
-              SnackBar(content: Text("Cuenta baneada correctamente"));
+          String mensaje;
+          if (nuevoEstado) {
+            mensaje = "Cuenta activada correctamente";
+          } else {
+            mensaje = "Cuenta desactivada correctamente";
+          }
+
+          final SnackBar msg = SnackBar(content: Text(mensaje));
           ScaffoldMessenger.of(context).showSnackBar(msg);
-          // Refresh the user list after banning
           _listarUsuarios();
         } else {
           final SnackBar msg = SnackBar(content: Text("Error ${value.msg}"));
           ScaffoldMessenger.of(context).showSnackBar(msg);
         }
       } catch (error) {
-        print("Error durante la modificacion de la cuenta: $error");
+        print("Error durante la modificación de la cuenta: $error");
       }
     }).catchError((error) {
-      print("Error durante la modificacion de la cuenta (catchError): $error");
+      print("Error durante la modificación de la cuenta (catchError): $error");
     });
   }
 
@@ -124,14 +135,16 @@ class _UserListViewState extends State<UserListView> {
                   const SizedBox(height: 10),
                   ElevatedButton(
                     onPressed: () {
-                      _banearUsuario(user['id']);
+                      _cambiarEstadoUsuario(
+                          user['id'], !user['cuenta']['estado']);
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.red,
+                      backgroundColor:
+                          user['cuenta']['estado'] ? Colors.red : Colors.green,
                     ),
-                    child: const Text(
-                      'Banear',
-                      style: TextStyle(
+                    child: Text(
+                      user['cuenta']['estado'] ? 'Banear' : 'Activar',
+                      style: const TextStyle(
                         color: Colors.white,
                       ),
                     ),
