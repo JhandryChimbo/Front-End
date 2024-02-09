@@ -59,26 +59,46 @@ class _AnimeViewState extends State<AnimeView> {
         borderRadius: BorderRadius.circular(10.0),
       ),
       child: InkWell(
-        onTap: () {},
+        onTap: () {
+          if (anime['id'] != null) {
+            print('ID del anime seleccionado: ${anime['id']}');
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => ComentarioAnimeView(
+                  animeId: anime['id'].toString(),
+                  animeTitulo: anime['titulo'],
+                  animeCuerpo: anime['cuerpo'],
+                  animeFecha: anime['fecha'],
+                ),
+              ),
+            );
+          } else {
+            print('La propiedad "id" es nula en este anime.');
+          }
+        },
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Container(
               height: 200,
               decoration: BoxDecoration(
+                borderRadius:
+                    const BorderRadius.vertical(top: Radius.circular(10.0)),
                 image: DecorationImage(
                   image: NetworkImage(
-                    'http://192.168.0.105:3000/api/images/${anime['archivo']}',
+                    'http://192.168.0.104:3000/api/images/${anime['archivo']}',
                   ),
                   fit: BoxFit.cover,
                 ),
               ),
             ),
             Padding(
-              padding: const EdgeInsets.all(10),
+              padding: const EdgeInsets.all(16),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  const SizedBox(height: 8),
                   Center(
                     child: Text(
                       anime['titulo'],
@@ -90,20 +110,39 @@ class _AnimeViewState extends State<AnimeView> {
                     ),
                   ),
                   const SizedBox(height: 8),
-                  Text('${anime['cuerpo']}'),
-                  Text('Tipo de Anime: ${anime['tipo_anime']}'),
-                  Text('Fecha Estreno: ${anime['fecha']}'),
-                  // Text(
-                  //   'Estado: ${anime['estado']}',
-                  //   style: const TextStyle(color: Colors.green),
-                  // ),
+                  Text(
+                    '${anime['cuerpo']}',
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Colors.grey[800],
+                    ),
+                    textAlign: TextAlign.justify
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    'Tipo de Anime: ${anime['tipo_anime']}',
+                    style: const TextStyle(
+                      fontSize: 14,
+                      color: Colors.blue,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    'Fecha de Estreno: ${anime['fecha']}',
+                    style: const TextStyle(
+                      fontSize: 14,
+                      color: Colors.blue,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
                   Text(
                     'Autor: ${anime['persona']['nombres']} ${anime['persona']['apellidos']}',
                     style: const TextStyle(
+                      fontSize: 14,
                       fontStyle: FontStyle.italic,
                     ),
                   ),
-                  const SizedBox(height: 10),
+                  const SizedBox(height: 16),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [

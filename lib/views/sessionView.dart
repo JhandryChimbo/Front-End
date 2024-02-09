@@ -86,7 +86,7 @@ class _SessionViewState extends State<SessionView> {
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: <Widget>[
                         const Text(
-                          "Noticias",
+                          "Animes",
                           style: TextStyle(
                             color: Colors.white,
                             fontWeight: FontWeight.bold,

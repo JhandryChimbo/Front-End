@@ -1,5 +1,4 @@
 import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:noticias/controls/servicio_back/FacadeService.dart';
 import 'package:geolocator/geolocator.dart';
@@ -27,6 +26,7 @@ class _ComentarioAnimeViewState extends State<ComentarioAnimeView> {
   final _formKey = GlobalKey<FormState>();
   List<Map<String, dynamic>> comentariosAnime = [];
   String? _editingCommentId;
+  int _loadedComments = 10;
 
   final TextEditingController comentarioController = TextEditingController();
 
@@ -114,21 +114,39 @@ class _ComentarioAnimeViewState extends State<ComentarioAnimeView> {
         borderRadius: BorderRadius.circular(10.0),
       ),
       child: Container(
-        padding: const EdgeInsets.all(10),
+        padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              widget.animeTitulo,
-              style: const TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
+            Center(
+              child: Text(
+                widget.animeTitulo,
+                style: const TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
-            const SizedBox(height: 5),
-            Text('Cuerpo: ${widget.animeCuerpo}'),
-            Text('Fecha Estreno: ${widget.animeFecha}'),
-            const SizedBox(height: 10),
+            const SizedBox(height: 8),
+            Text(
+              widget.animeCuerpo,
+              style: const TextStyle(
+                fontSize: 16,
+              ),
+              textAlign: TextAlign.justify,
+            ),
+            const SizedBox(height: 12),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'Fecha de Estreno: ${widget.animeFecha}',
+                  style: const TextStyle(
+                    fontSize: 12,
+                  ),
+                ),
+              ],
+            ),
           ],
         ),
       ),
@@ -206,50 +224,74 @@ class _ComentarioAnimeViewState extends State<ComentarioAnimeView> {
 
               String idPersonaLogeada = snapshot.data!;
               return Column(
-                children: comentariosAnime.reversed.map((comentario) {
-                  bool isOwner =
-                      comentario['persona']['id'] == idPersonaLogeada;
+                children: [
+                  ...comentariosAnime.reversed
+                      .take(_loadedComments)
+                      .map((comentario) {
+                    bool isOwner =
+                        comentario['persona']['id'] == idPersonaLogeada;
 
-                  return Card(
-                    elevation: 3,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10.0),
-                    ),
-                    child: Container(
-                      padding: const EdgeInsets.all(10),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            comentario['persona']['nombres'] +
-                                ' ' +
-                                comentario['persona']['apellidos'],
-                            style: const TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          const SizedBox(height: 5),
-                          Text('Fecha: ${comentario['fecha']}'),
-                          if (_editingCommentId != comentario['id'])
-                            Text('Cuerpo: ${comentario['cuerpo']}'),
-                          if (_editingCommentId == comentario['id'])
-                            _buildEditCommentForm(comentario['id']),
-                          if (isOwner && _editingCommentId == null)
-                            ElevatedButton(
-                              onPressed: () {
-                                print('ID: ${comentario['id']}');
-                                setState(() {
-                                  _editingCommentId = comentario['id'];
-                                });
-                              },
-                              child: const Text('Editar'),
-                            ),
-                        ],
+                    return Card(
+                      elevation: 3,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10.0),
                       ),
+                      child: Container(
+                        padding: const EdgeInsets.all(10),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              comentario['persona']['nombres'] +
+                                  ' ' +
+                                  comentario['persona']['apellidos'],
+                              style: const TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            const SizedBox(height: 5),
+                            if (_editingCommentId != comentario['id'])
+                              Text('${comentario['cuerpo']}'),
+                            if (_editingCommentId == comentario['id'])
+                              _buildEditCommentForm(comentario['id']),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                if (isOwner && _editingCommentId == null)
+                                ElevatedButton(
+                                  onPressed: () {
+                                    print('ID: ${comentario['id']}');
+                                    setState(() {
+                                      _editingCommentId = comentario['id'];
+                                    });
+                                  },
+                                  child: const Text('Editar'),
+                                ),
+                                Text(
+                                  '${comentario['fecha']}',
+                                  style: const TextStyle(
+                                    fontSize: 12,
+                                    color: Colors.grey,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  }),
+                  if (_loadedComments < comentariosAnime.length)
+                    ElevatedButton(
+                      onPressed: () {
+                        setState(() {
+                          _loadedComments += 10;
+                        });
+                      },
+                      child: const Text('Cargar Más Comentarios'),
                     ),
-                  );
-                }).toList(),
+                ],
               );
             },
           )

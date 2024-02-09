@@ -94,10 +94,18 @@ class _MapViewState extends State<MapView> {
                 ),
                 width: 80,
                 height: 80,
-                child: const Icon(
-                  Icons.pin_drop,
-                  color: Colors.blue,
-                  size: 40,
+                child: Column(
+                  children: [
+                    const Icon(
+                      Icons.pin_drop,
+                      color: Colors.blue,
+                      size: 40,
+                    ),
+                    Text(
+                      comentario['persona']['nombres'],
+                      style: const TextStyle(color: Colors.black, fontSize: 10), 
+                    ),
+                  ],
                 ),
               ),
             ),

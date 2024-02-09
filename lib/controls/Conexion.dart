@@ -9,12 +9,12 @@ class Conexion {
   // final String URL_MEDIA = "http://localhost:3000/api/images";
 
   // CASA
-  final String URL = "http://192.168.0.105:3000/api/";
-  final String URL_MEDIA = "http://192.168.0.105:3000/api/images/";
+  final String URL = "http://192.168.0.104:3000/api/";
+  final String URL_MEDIA = "http://192.168.0.104:3000/api/images/";
 
   // UNIVERSIDAD
-  // final String URL = "http://10.20.137.206:3000/api/";
-  // final String URL_MEDIA = "http://10.20.137.206:3000/api/images/";
+  // final String URL = "http://10.20.138.88:3000/api/";
+  // final String URL_MEDIA = "http://10.20.138.88:3000/api/images/";
   static bool NO_TOKEN = false;
   //auto-token
   Future<RespuestaGenerica> solicitudGet(String recurso, bool token) async {

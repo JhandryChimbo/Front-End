@@ -43,6 +43,7 @@ class _UserProfileViewState extends State<UserProfileView> {
               const SnackBar msg =
                   SnackBar(content: Text("Cuenta modificada correctamente"));
               ScaffoldMessenger.of(context).showSnackBar(msg);
+              _obtenerUsuario();
               // Navigator.pushReplacementNamed(context, '/home');
             } else {
               final SnackBar msg =

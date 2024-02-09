@@ -77,7 +77,7 @@ class _UserListViewState extends State<UserListView> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Padding(
-              padding: const EdgeInsets.all(10),
+              padding: const EdgeInsets.all(16),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -98,19 +98,43 @@ class _UserListViewState extends State<UserListView> {
                       'Fecha Nacimiento: ${user['fecha_nacimiento'] ?? 'NONE'}'),
                   Text('Correo: ${user['cuenta']['correo']}'),
                   Text('Rol: ${user['rol']['nombre']}'),
-                  Text(
-                    'Estado: ${user['cuenta']['estado'] ? 'Activo' : 'Inactivo'}',
-                    style: TextStyle(
-                        color: user['cuenta']['estado']
-                            ? Colors.green
-                            : Colors.red),
+                  Row(
+                    children: [
+                      Container(
+                        width: 8,
+                        height: 8,
+                        margin: const EdgeInsets.only(right: 8),
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: user['cuenta']['estado']
+                              ? Colors.green
+                              : Colors.red,
+                        ),
+                      ),
+                      Text(
+                        'Estado: ${user['cuenta']['estado'] ? 'Activo' : 'Inactivo'}',
+                        style: TextStyle(
+                          color: user['cuenta']['estado']
+                              ? Colors.green
+                              : Colors.red,
+                        ),
+                      ),
+                    ],
                   ),
                   const SizedBox(height: 10),
                   ElevatedButton(
                     onPressed: () {
                       _banearUsuario(user['id']);
                     },
-                    child: Text('Banear'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.red,
+                    ),
+                    child: const Text(
+                      'Banear',
+                      style: TextStyle(
+                        color: Colors.white,
+                      ),
+                    ),
                   ),
                 ],
               ),
