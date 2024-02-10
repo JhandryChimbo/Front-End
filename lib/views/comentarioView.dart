@@ -23,6 +23,7 @@ class ComentarioAnimeView extends StatefulWidget {
 }
 
 class _ComentarioAnimeViewState extends State<ComentarioAnimeView> {
+  final Utiles utiles = Utiles();
   final _formKey = GlobalKey<FormState>();
   List<Map<String, dynamic>> comentariosAnime = [];
   String? _editingCommentId;
@@ -79,6 +80,158 @@ class _ComentarioAnimeViewState extends State<ComentarioAnimeView> {
       });
     });
     return null;
+  }
+
+  void _cambiarEstadoUsuario(String usuarioId, bool nuevoEstado) {
+    FacadeService servicio = FacadeService();
+
+    Map<String, String> mapa = {
+      "estado": nuevoEstado.toString(),
+    };
+    log(mapa.toString());
+
+    servicio.modificarEstadoUsuario(usuarioId, mapa).then((value) async {
+      try {
+        if (value.code == 200) {
+          String mensaje;
+          if (nuevoEstado) {
+            mensaje = "Cuenta activada correctamente";
+          } else {
+            mensaje = "Cuenta desactivada correctamente";
+          }
+
+          final SnackBar msg = SnackBar(content: Text(mensaje));
+          ScaffoldMessenger.of(context).showSnackBar(msg);
+          _listarComentarios();
+        } else {
+          final SnackBar msg = SnackBar(content: Text("Error ${value.msg}"));
+          ScaffoldMessenger.of(context).showSnackBar(msg);
+        }
+      } catch (error) {
+        print("Error durante la modificación de la cuenta: $error");
+      }
+    }).catchError((error) {
+      print("Error durante la modificación de la cuenta (catchError): $error");
+    });
+  }
+
+  Future<void> _enviarComentario() async {
+    if (_formKey.currentState!.validate()) {
+      try {
+        Position position = await Geolocator.getCurrentPosition(
+          desiredAccuracy: LocationAccuracy.medium,
+        );
+        double latitud = position.latitude;
+        double longitud = position.longitude;
+
+        // Fecha
+        DateTime now = DateTime.now();
+        String fecha = now.toIso8601String();
+
+        //Persona
+        Utiles util = Utiles();
+        String? idPersonaLogeada = await util.getValue('id');
+
+        // Id anime
+        String idAnime = widget.animeId;
+
+        FacadeService servicio = FacadeService();
+        Map<String, dynamic> comentarioMap = {
+          'cuerpo': comentarioController.text,
+          'fecha': fecha,
+          'longitud': longitud,
+          'latitud': latitud,
+          'persona': idPersonaLogeada,
+          'anime': idAnime,
+        };
+
+        servicio.enviarComentario(comentarioMap).then((response) {
+          if (response.code == 200) {
+            const SnackBar msg = SnackBar(content: Text('Comentario enviado'));
+            ScaffoldMessenger.of(context).showSnackBar(msg);
+            comentarioController.clear();
+            _listarComentarios();
+          } else {
+            const SnackBar msg =
+                SnackBar(content: Text('Error al enviar comentario'));
+            ScaffoldMessenger.of(context).showSnackBar(msg);
+          }
+        }).catchError((error) {
+          print('Error al enviar comentario: $error');
+        });
+      } catch (e) {
+        print('Error al obtener la ubicación: $e');
+      }
+    }
+  }
+
+  void _mostrarDialogoBaneo(String userId) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Banear Usuario'),
+          content:
+              const Text('¿Estás seguro de que deseas banear a este usuario?'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text('Cancelar'),
+            ),
+            TextButton(
+              onPressed: () {
+                _cambiarEstadoUsuario(userId, false);
+                Navigator.of(context).pop();
+              },
+              child: const Text('Banear'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<Map<String, dynamic>> _getUserInfo() async {
+    String? idPersonaLogeada = await utiles.getValue('id');
+
+    if (idPersonaLogeada != null) {
+      FacadeService servicio = FacadeService();
+      var response = await servicio.obtenerUsuario(idPersonaLogeada);
+      if (response.code == 200) {
+        return Map<String, dynamic>.from(response.datos);
+      } else {
+        throw Exception('Error obteniendo información del usuario');
+      }
+    } else {
+      throw Exception('ID de persona logeada es nulo');
+    }
+  }
+
+  Future<void> _listarComentarios() async {
+    try {
+      FacadeService servicio = FacadeService();
+      var response = await servicio.listarComentarios();
+
+      if (response.code == 200) {
+        List<Map<String, dynamic>> comentarios =
+            List<Map<String, dynamic>>.from(response.datos);
+
+        setState(() {
+          comentariosAnime = comentarios
+              .where((comentario) =>
+                  comentario['anime']['id'] == widget.animeId &&
+                  comentario['estado'] == true &&
+                  comentario['persona']['cuenta']['estado'] == true)
+              .toList();
+        });
+      } else {
+        print('Error: ${response.msg}');
+      }
+    } catch (e) {
+      print('Excepción: $e');
+    }
   }
 
   @override
@@ -196,8 +349,6 @@ class _ComentarioAnimeViewState extends State<ComentarioAnimeView> {
   }
 
   Widget _buildComentariosList() {
-    Utiles util = Utiles();
-    Future<String?> idPersonaLogeadaFuture = util.getValue('id');
     return Column(
       children: [
         const SizedBox(height: 10),
@@ -210,8 +361,8 @@ class _ComentarioAnimeViewState extends State<ComentarioAnimeView> {
         ),
         const SizedBox(height: 10),
         if (comentariosAnime.isNotEmpty)
-          FutureBuilder<String?>(
-            future: idPersonaLogeadaFuture,
+          FutureBuilder<Map<String, dynamic>>(
+            future: _getUserInfo(),
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return const CircularProgressIndicator();
@@ -221,62 +372,74 @@ class _ComentarioAnimeViewState extends State<ComentarioAnimeView> {
                 return const Text('Error al obtener la id del usuario logeado');
               }
 
-              String idPersonaLogeada = snapshot.data!;
+              Map<String, dynamic> userInfo = snapshot.data!;
               return Column(
                 children: [
                   ...comentariosAnime.reversed
                       .take(_loadedComments)
                       .map((comentario) {
                     bool isOwner =
-                        comentario['persona']['id'] == idPersonaLogeada;
+                        comentario['persona']['id'] == userInfo['id'];
 
-                    return Card(
-                      elevation: 3,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10.0),
-                      ),
-                      child: Container(
-                        padding: const EdgeInsets.all(10),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              comentario['persona']['nombres'] +
-                                  ' ' +
-                                  comentario['persona']['apellidos'],
-                              style: const TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
+                    bool isAdmin = userInfo.containsKey('rol') &&
+                        userInfo['rol'] != null &&
+                        userInfo['rol']['nombre'] == 'admin';
+
+                    return GestureDetector(
+                      onTap: isAdmin
+                          ? () {
+                              _mostrarDialogoBaneo(comentario['persona']['id']);
+                            }
+                          : null,
+                      child: Card(
+                        elevation: 3,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10.0),
+                        ),
+                        child: Container(
+                          padding: const EdgeInsets.all(10),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                comentario['persona']['nombres'] +
+                                    ' ' +
+                                    comentario['persona']['apellidos'],
+                                style: const TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                ),
                               ),
-                            ),
-                            const SizedBox(height: 5),
-                            if (_editingCommentId != comentario['id'])
-                              Text('${comentario['cuerpo']}'),
-                            if (_editingCommentId == comentario['id'])
-                              _buildEditCommentForm(comentario['id']),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                if (isOwner && _editingCommentId == null)
-                                ElevatedButton(
-                                  onPressed: () {
-                                    print('ID: ${comentario['id']}');
-                                    setState(() {
-                                      _editingCommentId = comentario['id'];
-                                    });
-                                  },
-                                  child: const Text('Editar'),
-                                ),
-                                Text(
-                                  '${comentario['fecha']}',
-                                  style: const TextStyle(
-                                    fontSize: 12,
-                                    color: Colors.grey,
+                              const SizedBox(height: 5),
+                              if (_editingCommentId != comentario['id'])
+                                Text('${comentario['cuerpo']}'),
+                              if (_editingCommentId == comentario['id'])
+                                _buildEditCommentForm(comentario['id']),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  if (isOwner && _editingCommentId == null)
+                                    ElevatedButton(
+                                      onPressed: () {
+                                        print('ID: ${comentario['id']}');
+                                        setState(() {
+                                          _editingCommentId = comentario['id'];
+                                        });
+                                      },
+                                      child: const Text('Editar'),
+                                    ),
+                                  Text(
+                                    '${comentario['fecha']}',
+                                    style: const TextStyle(
+                                      fontSize: 12,
+                                      color: Colors.grey,
+                                    ),
                                   ),
-                                ),
-                              ],
-                            ),
-                          ],
+                                ],
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                     );
@@ -337,78 +500,5 @@ class _ComentarioAnimeViewState extends State<ComentarioAnimeView> {
         ],
       ),
     );
-  }
-
-  Future<void> _enviarComentario() async {
-    if (_formKey.currentState!.validate()) {
-      try {
-        Position position = await Geolocator.getCurrentPosition(
-          desiredAccuracy: LocationAccuracy.medium,
-        );
-        double latitud = position.latitude;
-        double longitud = position.longitude;
-
-        // Fecha
-        DateTime now = DateTime.now();
-        String fecha = now.toIso8601String();
-
-        //Persona
-        Utiles util = Utiles();
-        String? idPersonaLogeada = await util.getValue('id');
-
-        // Id anime
-        String idAnime = widget.animeId;
-
-        FacadeService servicio = FacadeService();
-        Map<String, dynamic> comentarioMap = {
-          'cuerpo': comentarioController.text,
-          'fecha': fecha,
-          'longitud': longitud,
-          'latitud': latitud,
-          'persona': idPersonaLogeada,
-          'anime': idAnime,
-        };
-
-        servicio.enviarComentario(comentarioMap).then((response) {
-          if (response.code == 200) {
-            const SnackBar msg = SnackBar(content: Text('Comentario enviado'));
-            ScaffoldMessenger.of(context).showSnackBar(msg);
-            comentarioController.clear();
-            _listarComentarios();
-          } else {
-            const SnackBar msg =
-                SnackBar(content: Text('Error al enviar comentario'));
-            ScaffoldMessenger.of(context).showSnackBar(msg);
-          }
-        }).catchError((error) {
-          print('Error al enviar comentario: $error');
-        });
-      } catch (e) {
-        print('Error al obtener la ubicación: $e');
-      }
-    }
-  }
-
-  Future<void> _listarComentarios() async {
-    try {
-      FacadeService servicio = FacadeService();
-      var response = await servicio.listarComentarios();
-
-      if (response.code == 200) {
-        List<Map<String, dynamic>> comentarios =
-            List<Map<String, dynamic>>.from(response.datos);
-
-        setState(() {
-          comentariosAnime = comentarios
-              .where(
-                  (comentario) => comentario['anime']['id'] == widget.animeId)
-              .toList();
-        });
-      } else {
-        print('Error: ${response.msg}');
-      }
-    } catch (e) {
-      print('Excepción: $e');
-    }
   }
 }

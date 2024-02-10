@@ -1,5 +1,4 @@
 import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:noticias/controls/servicio_back/FacadeService.dart';
 import 'package:noticias/controls/utiles/Utiles.dart';
@@ -44,7 +43,6 @@ class _UserProfileViewState extends State<UserProfileView> {
                   SnackBar(content: Text("Cuenta modificada correctamente"));
               ScaffoldMessenger.of(context).showSnackBar(msg);
               _obtenerUsuario();
-              // Navigator.pushReplacementNamed(context, '/home');
             } else {
               final SnackBar msg =
                   SnackBar(content: Text("Error ${value.msg}"));
@@ -70,9 +68,11 @@ class _UserProfileViewState extends State<UserProfileView> {
         title: const Text('Perfil de Usuario'),
       ),
       drawer: AppDrawer(),
-      body: Container(
-        padding: const EdgeInsets.all(16.0),
-        child: _buildUserProfile(),
+      body: SingleChildScrollView(
+        child: Container(
+          padding: const EdgeInsets.all(16.0),
+          child: _buildUserProfile(),
+        ),
       ),
     );
   }
@@ -176,11 +176,14 @@ class _UserProfileViewState extends State<UserProfileView> {
               return null;
             },
           ),
-          TextFormField(
-            initialValue: '${user['cuenta']['correo']}',
-            decoration: const InputDecoration(
-              labelText: 'Correo',
-              prefixIcon: Icon(Icons.email),
+          ListTile(
+            leading: const Icon(Icons.email),
+            title: const Text(
+              'Correo',
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
+            subtitle: Text(
+              '${user['cuenta']['correo']}',
             ),
           ),
           const SizedBox(height: 20),

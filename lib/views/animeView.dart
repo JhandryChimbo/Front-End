@@ -87,7 +87,7 @@ class _AnimeViewState extends State<AnimeView> {
                     const BorderRadius.vertical(top: Radius.circular(10.0)),
                 image: DecorationImage(
                   image: NetworkImage(
-                    'http://192.168.0.105:3000/api/images/${anime['archivo']}',
+                    'http://192.168.0.104:3000/api/images/${anime['archivo']}',
                   ),
                   fit: BoxFit.cover,
                 ),
