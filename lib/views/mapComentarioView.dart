@@ -111,7 +111,7 @@ class _MapComentarioViewState extends State<MapComentarioView> {
                       comentario['persona']['nombres'] +
                           ' ' +
                           comentario['persona']['apellidos'],
-                      style: const TextStyle(color: Colors.black, fontSize: 10),
+                      style: const TextStyle(color: Colors.black, fontSize: 8),
                     ),
                   ],
                 ),

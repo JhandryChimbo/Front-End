@@ -81,7 +81,6 @@ class _SessionViewState extends State<SessionView> {
                       colors: [
                         const Color.fromARGB(255, 24, 79, 135).withOpacity(0.5),
                         Colors.white.withOpacity(0.5),
-                        
                       ],
                     ),
                   ),

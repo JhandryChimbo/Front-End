@@ -5,7 +5,6 @@ import 'package:http/http.dart' as http;
 import 'package:noticias/controls/utiles/Utiles.dart';
 
 class Conexion {
-
   // CASA
   final String URL = "http://192.168.0.104:3000/api/";
   final String URL_MEDIA = "http://192.168.0.105:3000/api/images/";

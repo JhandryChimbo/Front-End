@@ -103,7 +103,7 @@ class _MapViewState extends State<MapView> {
                     ),
                     Text(
                       comentario['persona']['nombres'],
-                      style: const TextStyle(color: Colors.black, fontSize: 10), 
+                      style: const TextStyle(color: Colors.black, fontSize: 10),
                     ),
                   ],
                 ),

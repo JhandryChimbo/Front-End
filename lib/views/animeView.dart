@@ -110,14 +110,12 @@ class _AnimeViewState extends State<AnimeView> {
                     ),
                   ),
                   const SizedBox(height: 8),
-                  Text(
-                    '${anime['cuerpo']}',
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: Colors.grey[800],
-                    ),
-                    textAlign: TextAlign.justify
-                  ),
+                  Text('${anime['cuerpo']}',
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: Colors.grey[800],
+                      ),
+                      textAlign: TextAlign.justify),
                   const SizedBox(height: 8),
                   Text(
                     'Tipo de Anime: ${anime['tipo_anime']}',

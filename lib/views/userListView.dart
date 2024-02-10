@@ -108,7 +108,6 @@ class _UserListViewState extends State<UserListView> {
                   Text(
                       'Fecha Nacimiento: ${user['fecha_nacimiento'] ?? 'NONE'}'),
                   Text('Correo: ${user['cuenta']['correo']}'),
-                  Text('Rol: ${user['rol']['nombre']}'),
                   Row(
                     children: [
                       Container(
@@ -123,7 +122,7 @@ class _UserListViewState extends State<UserListView> {
                         ),
                       ),
                       Text(
-                        'Estado: ${user['cuenta']['estado'] ? 'Activo' : 'Inactivo'}',
+                        user['cuenta']['estado'] ? 'Activo' : 'Baneado',
                         style: TextStyle(
                           color: user['cuenta']['estado']
                               ? Colors.green

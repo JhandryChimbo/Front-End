@@ -4,4 +4,3 @@ class InicioSesionSW extends RespuestaGenerica {
   String tag = '';
   InicioSesionSW({msg = "", code = 0, datos, this.tag = ''});
 }
-
