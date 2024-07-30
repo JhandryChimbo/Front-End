@@ -52,16 +52,16 @@ La arquitectura del proyecto se basa en microservicios, donde cada uno de ellos 
 
 3. **Construir y levantar los contenedores Docker**:
 
-  3.1 **Docker dev**
+    3.1 **Docker dev**
 
-      ```bash
-      docker compose -f docker-compose-dev.yml up
-      ```
-  3.2 **Docker Compose**
+    ```bash
+    docker compose -f docker-compose-dev.yml up
+    ```
+
+    3.2 **Docker Compose**
   
-      ```bash
-      docker-compose up
-      ```
+    ```bash
+    docker-
 
 4. **Instala las dependencias de la aplicación móvil**:
 
