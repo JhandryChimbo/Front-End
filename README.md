@@ -61,7 +61,7 @@ La arquitectura del proyecto se basa en microservicios, donde cada uno de ellos 
     3.2 **Docker Compose**
   
     ```bash
-    docker-
+    docker-compose up
 
 4. **Instala las dependencias de la aplicación móvil**:
 
