@@ -15,7 +15,7 @@ Este proyecto de monitoreo ambiental utiliza una arquitectura basada en microser
   - [Visualización de Datos](#visualización-de-datos)
 - [📱 Aplicación Móvil](#-aplicación-móvil)
 - [🌐 Configuración de Nginx](#-configuración-de-nginx)
-- [🤝 Contribuciones](#-contribuciones)
+- [🤝 Agradecimiento](#-agradecimientos)
 
 ## 📖 Descripción del Proyecto
 
@@ -112,25 +112,49 @@ La arquitectura del proyecto se basa en microservicios, donde cada uno de ellos 
 - **Descripción**: Configuración de Nginx como proxy inverso para gestionar las peticiones a los diferentes microservicios.
 
     ```nginx
-    server {
-        listen 80;
-
-        location /api/collector {
-            proxy_pass http://data-collector:3000;
-        }
-
-        location /api/processor {
-            proxy_pass http://data-processor:3000;
-        }
-
-        location /api/visualizer {
-            proxy_pass http://data-visualizer:3000;
-        }
-
-        location / {
-            proxy_pass http://frontend:3000;
-        }
-    }
+     http {
+      include       mime.types;
+      default_type  application/octet-stream;
+  
+      sendfile        on;
+      keepalive_timeout  65;
+  
+      upstream cuentas {
+          server servicio-cuentas:3000;
+      }
+  
+      upstream usuarios {
+          server servicio-usuarios:3000;
+      }
+  
+      upstream sensores {
+          server servicio-sensores:3000;
+      }
+  
+      server {
+          listen 80;
+  
+          location /api/cuentas/ {
+              proxy_pass http://cuentas;
+          }
+  
+          location /api/usuarios/ {
+              proxy_pass http://usuarios;
+          }
+  
+          location /api/roles/ {
+              proxy_pass http://usuarios;
+          }
+  
+          location /api/sensores/ {
+              proxy_pass http://sensores;
+          }
+  
+          location /api/registros/ {
+              proxy_pass http://sensores;
+          }
+      }
+  }
     ```
 
 ## 🤝 Agradecimientos
