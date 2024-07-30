@@ -26,11 +26,9 @@ Este proyecto tiene como objetivo proporcionar un sistema completo de monitoreo 
 
 La arquitectura del proyecto se basa en microservicios, donde cada uno de ellos se encarga de una funcionalidad específica:
 
-- **Microservicio de Recolección de Datos**: Recibe datos de sensores.
-- **Microservicio de Procesamiento de Datos**: Procesa y almacena los datos en una base de datos.
-- **Microservicio de Visualización de Datos**: Proporciona una API para la aplicación móvil.
-- **Aplicación Móvil (React Native)**: Permite a los usuarios visualizar los datos ambientales.
-- **Nginx**: Actúa como un proxy inverso para gestionar las peticiones a los diferentes microservicios.
+- **Microservicio de Cuentas**: Manejo de informacion de las cuentas.
+- **Microservicio de Usuario**: Gestiona los datos de los usuarios.
+- **Microservicio de Sensores**: Control de los sensores.
 
 ## 🛠 Requisitos
 
@@ -51,9 +49,9 @@ La arquitectura del proyecto se basa en microservicios, donde cada uno de ellos 
 
 2. **Configura las variables de entorno**:
 
-    Crea un archivo `.env` en la raíz del proyecto y configura las variables necesarias para cada microservicio.
+    Crea un archivo `.env` en la raíz del proyecto y los diferentes microservicios para despues configurar las variables necesarias de cada archivo.
 
-3. **Construye y levanta los contenedores Docker**:
+3. **Construir y levantar los contenedores Docker**:
 
     ```bash
     docker-compose up --build
@@ -82,20 +80,20 @@ La arquitectura del proyecto se basa en microservicios, donde cada uno de ellos 
 
 ## 🔧 Microservicios
 
-### Recolección de Datos
+### Cuentas
 
-- **Ruta**: `./services/data-collector`
-- **Descripción**: Recibe datos de los sensores y los envía al microservicio de procesamiento.
+- **Ruta**: `./microservicio-cuentas`
+- **Descripción**: Manje la información de las cuentas
 
-### Procesamiento de Datos
+### Usuarios
 
-- **Ruta**: `./services/data-processor`
-- **Descripción**: Procesa los datos recibidos y los almacena en la base de datos.
+- **Ruta**: `./microservicio-usuarios`
+- **Descripción**: Procesa los datos del usuario.
 
-### Visualización de Datos
+### Sensores
 
-- **Ruta**: `./services/data-visualizer`
-- **Descripción**: Proporciona una API para que la aplicación móvil consuma los datos procesados.
+- **Ruta**: `./microservicio-sensores`
+- **Descripción**: Recibe datos de los sensores y los almacena.
 
 ## 📱 Aplicación Móvil
 
