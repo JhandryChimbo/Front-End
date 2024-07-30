@@ -137,10 +137,10 @@ La arquitectura del proyecto se basa en microservicios, donde cada uno de ellos 
 
 Agradecemos a todos los colaboradores y al equipo que ha hecho posible este proyecto:
 
-- **David Campoverde**: Coordinación del proyecto y desarrollo de microservicios.
-- **Jhandry Chimbo**: Implementación de la lógica de procesamiento de datos y configuración de Docker.
-- **Ivan Gonzalez**: Desarrollo de la aplicación móvil en React Native y soporte técnico.
-- **David Intriago**: Configuración y optimización del proxy inverso con Nginx.
-- **Dennys Pucha**: Pruebas y aseguramiento de calidad del sistema.
+- **David Campoverde**: Backend developer para el desarrollo de los microservicios
+- **Jhandry Chimbo**: Frontend developer en el diseño de la página web.
+- **Ivan Gonzalez**: Fullstack developer para el desarrollo de la aplicación (Backend y Frontend).
+- **David Intriago**: Diseño de la red para escalamiento horizontal de microservicios de la topología de red.
+- **Dennys Pucha**: Desarrollo de la aplicación móvil en React Native.
 
 
