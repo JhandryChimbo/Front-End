@@ -16,7 +16,6 @@ Este proyecto de monitoreo ambiental utiliza una arquitectura basada en microser
 - [📱 Aplicación Móvil](#-aplicación-móvil)
 - [🌐 Configuración de Nginx](#-configuración-de-nginx)
 - [🤝 Contribuciones](#-contribuciones)
-- [📜 Licencia](#-licencia)
 
 ## 📖 Descripción del Proyecto
 
@@ -53,9 +52,16 @@ La arquitectura del proyecto se basa en microservicios, donde cada uno de ellos 
 
 3. **Construir y levantar los contenedores Docker**:
 
-    ```bash
-    docker-compose up --build
-    ```
+  3.1 **Docker dev**
+
+      ```bash
+      docker compose -f docker-compose-dev.yml up
+      ```
+  3.2 **Docker Compose**
+  
+      ```bash
+      docker-compose up
+      ```
 
 4. **Instala las dependencias de la aplicación móvil**:
 
@@ -127,11 +133,8 @@ La arquitectura del proyecto se basa en microservicios, donde cada uno de ellos 
     }
     ```
 
-## 🤝 Contribuciones
+## 🤝 Agradecimientos
 
 Las contribuciones son bienvenidas. Por favor, abre un issue o un pull request para discutir cualquier cambio que te gustaría realizar.
 
-## 📜 Licencia
-
-Este proyecto está licenciado bajo la Licencia MIT. Consulta el archivo [LICENSE](./LICENSE) para más detalles.
 
