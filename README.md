@@ -103,7 +103,7 @@ La arquitectura del proyecto se basa en microservicios, donde cada uno de ellos 
 
 ## 📱 Aplicación Móvil
 
-- **Ruta**: `./app`
+- **Ruta**: `./app_mobile`
 - **Descripción**: Aplicación móvil desarrollada en React Native para visualizar los datos ambientales.
 
 ## 🌐 Configuración de Nginx
@@ -135,6 +135,12 @@ La arquitectura del proyecto se basa en microservicios, donde cada uno de ellos 
 
 ## 🤝 Agradecimientos
 
-Las contribuciones son bienvenidas. Por favor, abre un issue o un pull request para discutir cualquier cambio que te gustaría realizar.
+Agradecemos a todos los colaboradores y al equipo que ha hecho posible este proyecto:
+
+- **David Campoverde**: Coordinación del proyecto y desarrollo de microservicios.
+- **Jhandry Chimbo**: Implementación de la lógica de procesamiento de datos y configuración de Docker.
+- **Ivan Gonzalez**: Desarrollo de la aplicación móvil en React Native y soporte técnico.
+- **David Intriago**: Configuración y optimización del proxy inverso con Nginx.
+- **Dennys Pucha**: Pruebas y aseguramiento de calidad del sistema.
 
 
