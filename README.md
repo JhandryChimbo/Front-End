@@ -7,7 +7,7 @@ Este proyecto de monitoreo ambiental utiliza una arquitectura basada en microser
 - [📖 Descripción del Proyecto](#-descripción-del-proyecto)
 - [🏗 Arquitectura del Proyecto](#-arquitectura-del-proyecto)
 - [🛠 Requisitos](#-requisitos)
-- [⚙️ Instalación](#-instalación)
+- [⚙️ Instalacion](#-instalación)
 - [🚀 Uso](#-uso)
 - [🔧 Microservicios](#-microservicios)
   - [Recolección de Datos](#recolección-de-datos)
@@ -37,7 +37,7 @@ La arquitectura del proyecto se basa en microservicios, donde cada uno de ellos 
 - React Native CLI
 - Nginx
 
-## ⚙️ Instalación
+## ⚙️ Instalacion
 
 1. **Clona el repositorio**:
 
