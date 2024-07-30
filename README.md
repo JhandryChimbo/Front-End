@@ -60,3 +60,50 @@ Levanta la aplicación móvil:
 react-native run-android
 # O
 react-native run-ios
+
+Accede a la aplicación:
+
+La aplicación móvil estará disponible en el emulador o dispositivo físico conectado.
+
+## Microservicios
+
+### Recolección de Datos
+- **Ruta**: `./services/data-collector`
+- **Descripción**: Recibe datos de los sensores y los envía al microservicio de procesamiento.
+
+### Procesamiento de Datos
+- **Ruta**: `./services/data-processor`
+- **Descripción**: Procesa los datos recibidos y los almacena en la base de datos.
+
+### Visualización de Datos
+- **Ruta**: `./services/data-visualizer`
+- **Descripción**: Proporciona una API para que la aplicación móvil consuma los datos procesados.
+
+## Aplicación Móvil
+- **Ruta**: `./app`
+- **Descripción**: Aplicación móvil desarrollada en React Native para visualizar los datos ambientales.
+
+## Configuración de Nginx
+- **Ruta**: `./nginx`
+- **Descripción**: Configuración de Nginx como proxy inverso para gestionar las peticiones a los diferentes microservicios.
+
+```nginx
+server {
+    listen 80;
+
+    location /api/collector {
+        proxy_pass http://data-collector:3000;
+    }
+
+    location /api/processor {
+        proxy_pass http://data-processor:3000;
+    }
+
+    location /api/visualizer {
+        proxy_pass http://data-visualizer:3000;
+    }
+
+    location / {
+        proxy_pass http://frontend:3000;
+    }
+}
