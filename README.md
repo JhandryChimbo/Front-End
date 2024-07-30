@@ -52,13 +52,13 @@ La arquitectura del proyecto se basa en microservicios, donde cada uno de ellos 
 
 3. **Construir y levantar los contenedores Docker**:
 
-    3.1 **Docker dev**
+    3.1 **Entorno de Desarrollo**
 
     ```bash
     docker compose -f docker-compose-dev.yml up
     ```
 
-    3.2 **Docker Compose**
+    3.2 **Entorno de Producción**
   
     ```bash
     docker-compose up
@@ -165,6 +165,6 @@ Agradecemos a todos los colaboradores y al equipo que ha hecho posible este proy
 - **Jhandry Chimbo**: Frontend developer en el diseño de la página web.
 - **Ivan Gonzalez**: Fullstack developer para el desarrollo de la aplicación (Backend y Frontend).
 - **David Intriago**: Diseño de la red para escalamiento horizontal de microservicios de la topología de red.
-- **Dennys Pucha**: Desarrollo de la aplicación móvil en React Native.
+- **Dennys Pucha**: Desarrollo de la aplicación móvil en React Native y encargado de dispositivos IOT.
 
 
